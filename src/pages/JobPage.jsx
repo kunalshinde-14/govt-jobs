@@ -51,6 +51,7 @@ export default function JobPage() {
 
         {/* INFO CARD */}
         <div className="border rounded-xl p-6 mb-6 bg-white">
+
           <div className="flex justify-between mb-4">
             <span className="text-stone-500">
               Last Date
@@ -71,6 +72,26 @@ export default function JobPage() {
             </span>
           </div>
 
+          <div className="flex justify-between mb-4">
+            <span className="text-stone-500">
+              Vacancies
+            </span>
+
+            <span className="font-medium">
+              {job.vacancies}
+            </span>
+          </div>
+
+          <div className="flex justify-between mb-4">
+            <span className="text-stone-500">
+              Salary
+            </span>
+
+            <span className="font-medium">
+              {job.salary}
+            </span>
+          </div>
+
           <div className="flex justify-between">
             <span className="text-stone-500">
               Location
@@ -80,34 +101,53 @@ export default function JobPage() {
               {job.state}
             </span>
           </div>
+
         </div>
 
         {/* DESCRIPTION */}
         <div className="border rounded-xl p-6 mb-6 bg-white">
+
           <h2 className="font-semibold mb-3 text-lg">
             Job Description
           </h2>
 
           <p className="text-sm text-stone-600 leading-relaxed">
-            This is a placeholder description. Once backend is added,
-            full job details, eligibility criteria, vacancy information,
-            salary details, and instructions will appear here.
+            This recruitment is conducted by the official{" "}
+            {job.department} department. Candidates meeting the
+            required eligibility criteria can apply through the
+            official government portal before the deadline.
           </p>
+
         </div>
 
-        {/* 💻 Desktop Apply Button */}
+        {/* 💻 DESKTOP APPLY */}
         <div className="hidden md:block">
+          <a
+            href={job.applyLink}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <button className="w-full bg-amber-600 active:scale-[0.98] transition text-white py-3 rounded-xl text-lg">
+              Apply Now
+            </button>
+          </a>
+        </div>
+
+      </div>
+
+      {/* 📱 MOBILE STICKY APPLY */}
+      <div className="fixed bottom-0 left-0 w-full bg-white border-t shadow-[0_-4px_12px_rgba(0,0,0,0.06)] p-3 md:hidden">
+
+        <a
+          href={job.applyLink}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <button className="w-full bg-amber-600 active:scale-[0.98] transition text-white py-3 rounded-xl text-lg">
             Apply Now
           </button>
-        </div>
-      </div>
+        </a>
 
-      {/* 📱 Sticky Mobile Apply */}
-      <div className="fixed bottom-0 left-0 w-full bg-white border-t shadow-[0_-4px_12px_rgba(0,0,0,0.06)] p-3 md:hidden">
-        <button className="w-full bg-amber-600 active:scale-[0.98] transition text-white py-3 rounded-xl text-lg">
-          Apply Now
-        </button>
       </div>
     </>
   );

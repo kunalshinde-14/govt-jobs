@@ -6,7 +6,11 @@ export const jobs = [
     lastDate: "2026-05-25",
     qualification: "12th",
     state: "All India",
+    salary: "₹25,000 - ₹81,000",
+    vacancies: 4500,
+    applyLink: "https://ssc.nic.in",
   },
+
   {
     id: 2,
     title: "Railway Group D",
@@ -14,7 +18,11 @@ export const jobs = [
     lastDate: "2026-05-18",
     qualification: "10th",
     state: "All India",
+    salary: "₹18,000 - ₹56,900",
+    vacancies: 12000,
+    applyLink: "https://indianrailways.gov.in",
   },
+
   {
     id: 3,
     title: "IBPS PO",
@@ -22,7 +30,11 @@ export const jobs = [
     lastDate: "2026-06-02",
     qualification: "Graduate",
     state: "All India",
+    salary: "₹52,000 - ₹55,000",
+    vacancies: 3200,
+    applyLink: "https://ibps.in",
   },
+
   {
     id: 4,
     title: "UPSC Civil Services",
@@ -30,7 +42,11 @@ export const jobs = [
     lastDate: "2026-06-10",
     qualification: "Graduate",
     state: "All India",
+    salary: "₹56,100 - ₹2,50,000",
+    vacancies: 1056,
+    applyLink: "https://upsc.gov.in",
   },
+
   {
     id: 5,
     title: "Indian Army Agniveer",
@@ -38,7 +54,11 @@ export const jobs = [
     lastDate: "2026-05-12",
     qualification: "12th",
     state: "All India",
+    salary: "₹30,000 - ₹40,000",
+    vacancies: 25000,
+    applyLink: "https://joinindianarmy.nic.in",
   },
+
   {
     id: 6,
     title: "MPSC Clerk",
@@ -46,7 +66,11 @@ export const jobs = [
     lastDate: "2026-05-20",
     qualification: "Graduate",
     state: "Maharashtra",
+    salary: "₹25,500 - ₹81,100",
+    vacancies: 800,
+    applyLink: "https://mpsc.gov.in",
   },
+
   {
     id: 7,
     title: "SSC CGL",
@@ -54,7 +78,11 @@ export const jobs = [
     lastDate: "2026-06-05",
     qualification: "Graduate",
     state: "All India",
+    salary: "₹44,900 - ₹1,42,400",
+    vacancies: 6500,
+    applyLink: "https://ssc.nic.in",
   },
+
   {
     id: 8,
     title: "Railway Technician",
@@ -62,7 +90,11 @@ export const jobs = [
     lastDate: "2026-05-22",
     qualification: "Diploma",
     state: "All India",
+    salary: "₹29,200 - ₹92,300",
+    vacancies: 2100,
+    applyLink: "https://indianrailways.gov.in",
   },
+
   {
     id: 9,
     title: "SBI Clerk",
@@ -70,7 +102,11 @@ export const jobs = [
     lastDate: "2026-05-30",
     qualification: "Graduate",
     state: "All India",
+    salary: "₹26,000 - ₹29,000",
+    vacancies: 5000,
+    applyLink: "https://ibps.in",
   },
+
   {
     id: 10,
     title: "NDA Exam",
@@ -78,69 +114,8 @@ export const jobs = [
     lastDate: "2026-06-01",
     qualification: "12th",
     state: "All India",
-  },
-  {
-    id: 11,
-    title: "UPSC EPFO",
-    department: "UPSC",
-    lastDate: "2026-05-28",
-    qualification: "Graduate",
-    state: "All India",
-  },
-  {
-    id: 12,
-    title: "State Police Constable",
-    department: "State PSC",
-    lastDate: "2026-05-15",
-    qualification: "12th",
-    state: "Maharashtra",
-  },
-  {
-    id: 13,
-    title: "SSC MTS",
-    department: "SSC",
-    lastDate: "2026-05-17",
-    qualification: "10th",
-    state: "All India",
-  },
-  {
-    id: 14,
-    title: "Railway Apprentice",
-    department: "Railway",
-    lastDate: "2026-06-08",
-    qualification: "10th",
-    state: "All India",
-  },
-  {
-    id: 15,
-    title: "Bank PO 2026",
-    department: "Banking",
-    lastDate: "2026-05-27",
-    qualification: "Graduate",
-    state: "All India",
-  },
-  {
-    id: 16,
-    title: "Territorial Army",
-    department: "Defence",
-    lastDate: "2026-05-19",
-    qualification: "Graduate",
-    state: "All India",
-  },
-  {
-    id: 17,
-    title: "UPSC CDS",
-    department: "UPSC",
-    lastDate: "2026-06-03",
-    qualification: "Graduate",
-    state: "All India",
-  },
-  {
-    id: 18,
-    title: "State Tax Officer",
-    department: "State PSC",
-    lastDate: "2026-05-29",
-    qualification: "Graduate",
-    state: "Maharashtra",
+    salary: "₹56,100+",
+    vacancies: 400,
+    applyLink: "https://joinindianarmy.nic.in",
   },
 ];

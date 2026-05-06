@@ -6,6 +6,7 @@ import Hero from "./components/Hero";
 import ClosingSoon from "./components/ClosingSoon";
 import LatestJobs from "./components/LatestJobs";
 import Categories from "./components/Categories";
+import Footer from "./components/Footer";
 
 import LoginModal from "./components/LoginModal";
 
@@ -29,7 +30,8 @@ function App() {
   const [showLogin, setShowLogin] = useState(false);
 
   return (
-    <div>
+    <div className="min-h-screen bg-[#fffbf5]">
+
       <Navbar />
 
       <Routes>
@@ -106,6 +108,10 @@ function App() {
           }}
         />
       )}
+
+      {/* FOOTER */}
+      <Footer />
+
     </div>
   );
 }
