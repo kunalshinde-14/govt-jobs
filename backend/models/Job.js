@@ -1,14 +1,58 @@
 const mongoose = require("mongoose");
 
-const jobSchema = new mongoose.Schema({
-  title: String,
-  department: String,
-  qualification: String,
-  state: String,
-  salary: String,
-  vacancies: Number,
-  lastDate: String,
-  applyLink: String,
-});
+const jobSchema = new mongoose.Schema(
 
-module.exports = mongoose.model("Job", jobSchema);
+  {
+    title: {
+      type: String,
+      required: true,
+    },
+
+    department: {
+      type: String,
+      required: true,
+    },
+
+    qualification: {
+      type: String,
+      required: true,
+    },
+
+    state: {
+      type: String,
+      required: true,
+    },
+
+    salary: {
+      type: String,
+      required: true,
+    },
+
+    vacancies: {
+      type: Number,
+      required: true,
+    },
+
+    lastDate: {
+      type: String,
+      required: true,
+    },
+
+    applyLink: {
+      type: String,
+      required: true,
+    },
+  },
+
+  // ✅ IMPORTANT
+  {
+    timestamps: true,
+  }
+
+);
+
+module.exports =
+  mongoose.model(
+    "Job",
+    jobSchema
+  );
