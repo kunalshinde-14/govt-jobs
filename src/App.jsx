@@ -15,30 +15,47 @@ import LoginModal from "./components/LoginModal";
 import SavedJobs from "./pages/SavedJobs";
 import CategoryPage from "./pages/CategoryPage";
 import JobPage from "./pages/JobPage";
+import AdminPage from "./pages/AdminPage";
 
 function App() {
 
-  const [jobs, setJobs] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // 🔥 ALL JOBS
+  const [jobs, setJobs] =
+    useState([]);
 
-  const [search, setSearch] = useState("");
+  // 🔥 LOADING
+  const [loading, setLoading] =
+    useState(true);
 
-  const [filters, setFilters] = useState({
-    qualification: [],
-    state: "",
-  });
+  // 🔍 SEARCH
+  const [search, setSearch] =
+    useState("");
 
+  // 🔍 FILTERS
+  const [filters, setFilters] =
+    useState({
+      qualification: [],
+      state: "",
+    });
+
+  // 🔐 LOGIN
   const [isLoggedIn, setIsLoggedIn] =
-    useState(!!localStorage.getItem("token"));
+    useState(
+      !!localStorage.getItem("token")
+    );
 
+  // 🔐 LOGIN MODAL
   const [showLogin, setShowLogin] =
     useState(false);
 
-  // ✅ SINGLE SOURCE OF TRUTH
+  // ❤️ SAVED JOB IDS
   const [savedJobs, setSavedJobs] =
     useState([]);
 
-  // ✅ FETCH SAVED JOB IDS
+
+
+
+  // ✅ FETCH SAVED JOBS
   useEffect(() => {
 
     const fetchSavedJobs = async () => {
@@ -48,9 +65,11 @@ function App() {
         const token =
           localStorage.getItem("token");
 
+        // USER NOT LOGGED IN
         if (!token) {
 
           setSavedJobs([]);
+
           return;
 
         }
@@ -64,10 +83,11 @@ function App() {
           }
         );
 
-        // ✅ ONLY IDS
-        const ids = res.data.map(
-          (job) => job._id
-        );
+        // ✅ ONLY STORE IDS
+        const ids =
+          res.data.map(
+            (job) => job._id
+          );
 
         setSavedJobs(ids);
 
@@ -82,6 +102,7 @@ function App() {
     fetchSavedJobs();
 
   }, [isLoggedIn]);
+
 
 
 
@@ -207,6 +228,16 @@ function App() {
 
 
 
+        {/* ADMIN PAGE */}
+        <Route
+          path="/admin"
+          element={
+            <AdminPage />
+          }
+        />
+
+
+
         {/* JOB PAGE */}
         <Route
           path="/job/:id"
@@ -246,4 +277,4 @@ function App() {
   );
 }
 
-export default App; 
+export default App;
