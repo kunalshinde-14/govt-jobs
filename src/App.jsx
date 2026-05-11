@@ -20,63 +20,119 @@ function App() {
 
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
+
   const [search, setSearch] = useState("");
-  const [filters, setFilters] = useState({ qualification: [], state: "" });
-  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
-  const [showLogin, setShowLogin] = useState(false);
 
-  // ✅ SINGLE source of truth for saved jobs
-  const [savedJobs, setSavedJobs] = useState([]);
+  const [filters, setFilters] = useState({
+    qualification: [],
+    state: "",
+  });
 
-  // ✅ FETCH SAVED JOBS — from backend if logged in, else empty
+  const [isLoggedIn, setIsLoggedIn] =
+    useState(!!localStorage.getItem("token"));
+
+  const [showLogin, setShowLogin] =
+    useState(false);
+
+  // ✅ SINGLE SOURCE OF TRUTH
+  const [savedJobs, setSavedJobs] =
+    useState([]);
+
+  // ✅ FETCH SAVED JOB IDS
   useEffect(() => {
+
     const fetchSavedJobs = async () => {
+
       try {
-        const token = localStorage.getItem("token");
-        if (!token) return;
+
+        const token =
+          localStorage.getItem("token");
+
+        if (!token) {
+
+          setSavedJobs([]);
+          return;
+
+        }
 
         const res = await axios.get(
           "https://govt-jobs-backend-2egy.onrender.com/api/users/saved-jobs",
-          { headers: { Authorization: `Bearer ${token}` } }
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
 
-        const ids = res.data.map((job) => job._id);
+        // ✅ ONLY IDS
+        const ids = res.data.map(
+          (job) => job._id
+        );
+
         setSavedJobs(ids);
 
       } catch (error) {
+
         console.log(error);
+
       }
+
     };
 
     fetchSavedJobs();
-  }, [isLoggedIn]); // re-fetch when user logs in
 
-  // 🔥 FETCH JOBS
+  }, [isLoggedIn]);
+
+
+
+  // ✅ FETCH ALL JOBS
   useEffect(() => {
+
     const fetchJobs = async () => {
+
       try {
-        const res = await axios.get("https://govt-jobs-backend-2egy.onrender.com/api/jobs");
+
+        const res = await axios.get(
+          "https://govt-jobs-backend-2egy.onrender.com/api/jobs"
+        );
+
         setJobs(res.data);
+
       } catch (error) {
+
         console.log(error);
+
       } finally {
+
         setLoading(false);
+
       }
+
     };
 
     fetchJobs();
+
   }, []);
 
+
+
+
   return (
+
     <div className="min-h-screen bg-[#fffbf5]">
 
+      {/* NAVBAR */}
       <Navbar savedJobs={savedJobs} />
+
+
 
       <Routes>
 
+        {/* HOME */}
         <Route
           path="/"
           element={
+
             <div className="space-y-8">
 
               <Hero
@@ -113,9 +169,13 @@ function App() {
               />
 
             </div>
+
           }
         />
 
+
+
+        {/* SAVED JOBS */}
         <Route
           path="/saved"
           element={
@@ -129,8 +189,11 @@ function App() {
           }
         />
 
+
+
+        {/* CATEGORY PAGE */}
         <Route
-          path="/category/:name"
+          path="/category/:category"
           element={
             <CategoryPage
               jobs={jobs}
@@ -142,27 +205,45 @@ function App() {
           }
         />
 
+
+
+        {/* JOB PAGE */}
         <Route
           path="/job/:id"
-          element={<JobPage jobs={jobs} />}
+          element={
+            <JobPage jobs={jobs} />
+          }
         />
 
       </Routes>
 
+
+
+      {/* LOGIN MODAL */}
       {showLogin && (
+
         <LoginModal
-          onClose={() => setShowLogin(false)}
+          onClose={() =>
+            setShowLogin(false)
+          }
           onLogin={() => {
+
             setIsLoggedIn(true);
+
             setShowLogin(false);
+
           }}
         />
+
       )}
 
+
+
+      {/* FOOTER */}
       <Footer />
 
     </div>
   );
 }
 
-export default App;
+export default App; 
