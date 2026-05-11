@@ -1,55 +1,61 @@
 import { Link, useLocation } from "react-router-dom";
-import { getSavedJobs } from "../utils/storage";
-import { useEffect, useState } from "react";
 
-export default function Navbar() {
+export default function Navbar({ savedJobs }) {
+
   const location = useLocation();
-  const [savedCount, setSavedCount] = useState(0);
 
-  useEffect(() => {
-    setSavedCount(getSavedJobs().length);
-
-    // update when storage changes
-    const interval = setInterval(() => {
-      setSavedCount(getSavedJobs().length);
-    }, 500);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const linkStyle = (path) =>
-    `transition ${
-      location.pathname === path
-        ? "text-amber-600 font-medium"
-        : "text-gray-700 hover:text-amber-600"
-    }`;
+  const user = JSON.parse(localStorage.getItem("user"));
 
   return (
-    <div className="border-b bg-white">
-      <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+    <nav className="border-b bg-white sticky top-0 z-50">
 
-        {/* Logo */}
-        <Link to="/" className="text-xl font-semibold text-amber-600">
+      <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+
+        {/* LOGO */}
+        <Link
+          to="/"
+          className="text-2xl font-bold text-amber-600"
+        >
           GovtJobs
         </Link>
 
-        {/* Nav Links */}
-        <div className="flex items-center gap-6 text-sm">
+        {/* NAV */}
+        <div className="flex items-center gap-6">
 
-          <Link to="/" className={linkStyle("/")}>
+          <Link
+            to="/"
+            className={
+              location.pathname === "/"
+                ? "font-semibold text-black"
+                : "text-stone-500"
+            }
+          >
             Home
           </Link>
 
-          <Link to="/saved" className={linkStyle("/saved")}>
-            Saved
-            {savedCount > 0 && (
-              <span className="ml-2 text-xs bg-amber-600 text-white px-2 py-0.5 rounded-full">
-                {savedCount}
-              </span>
-            )}
+          {/* SAVED */}
+          <Link
+            to="/saved"
+            className={
+              location.pathname === "/saved"
+                ? "font-semibold text-black"
+                : "text-stone-500"
+            }
+          >
+            Saved ({savedJobs.length})
           </Link>
+
+          {/* USER */}
+          {user && (
+            <div className="bg-stone-100 px-4 py-2 rounded-xl text-sm">
+              {user.name}
+            </div>
+          )}
+
         </div>
+
       </div>
-    </div>
+
+    </nav>
   );
 }

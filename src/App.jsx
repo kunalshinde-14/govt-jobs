@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
+
 import { Routes, Route } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
@@ -15,34 +17,70 @@ import CategoryPage from "./pages/CategoryPage";
 import JobPage from "./pages/JobPage";
 
 function App() {
+
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-
-  const [filters, setFilters] = useState({
-    qualification: [],
-    state: "",
-  });
-
-  // 🔐 Persist login
-  const [isLoggedIn, setIsLoggedIn] = useState(
-    localStorage.getItem("isLoggedIn") === "true"
-  );
-
+  const [filters, setFilters] = useState({ qualification: [], state: "" });
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
   const [showLogin, setShowLogin] = useState(false);
+
+  // ✅ SINGLE source of truth for saved jobs
+  const [savedJobs, setSavedJobs] = useState([]);
+
+  // ✅ FETCH SAVED JOBS — from backend if logged in, else empty
+  useEffect(() => {
+    const fetchSavedJobs = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        const res = await axios.get(
+          "http://localhost:5000/api/users/saved-jobs",
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        const ids = res.data.map((job) => job._id);
+        setSavedJobs(ids);
+
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchSavedJobs();
+  }, [isLoggedIn]); // re-fetch when user logs in
+
+  // 🔥 FETCH JOBS
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/api/jobs");
+        setJobs(res.data);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchJobs();
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#fffbf5]">
 
-      <Navbar />
+      <Navbar savedJobs={savedJobs} />
 
       <Routes>
 
-        {/* 🏠 HOME */}
         <Route
           path="/"
           element={
             <div className="space-y-8">
 
               <Hero
+                jobs={jobs}
                 search={search}
                 setSearch={setSearch}
                 filters={filters}
@@ -50,66 +88,77 @@ function App() {
               />
 
               <ClosingSoon
+                jobs={jobs}
+                loading={loading}
                 isLoggedIn={isLoggedIn}
                 setShowLogin={setShowLogin}
+                savedJobs={savedJobs}
+                setSavedJobs={setSavedJobs}
               />
 
               <LatestJobs
+                jobs={jobs}
+                loading={loading}
                 search={search}
                 filters={filters}
                 isLoggedIn={isLoggedIn}
                 setShowLogin={setShowLogin}
+                savedJobs={savedJobs}
+                setSavedJobs={setSavedJobs}
               />
 
-              <Categories />
+              <Categories
+                jobs={jobs}
+                loading={loading}
+              />
 
             </div>
           }
         />
 
-        {/* 💾 SAVED */}
         <Route
           path="/saved"
           element={
             <SavedJobs
+              jobs={jobs}
               isLoggedIn={isLoggedIn}
               setShowLogin={setShowLogin}
+              savedJobs={savedJobs}
+              setSavedJobs={setSavedJobs}
             />
           }
         />
 
-        {/* 📂 CATEGORY */}
         <Route
           path="/category/:name"
           element={
             <CategoryPage
+              jobs={jobs}
               isLoggedIn={isLoggedIn}
               setShowLogin={setShowLogin}
+              savedJobs={savedJobs}
+              setSavedJobs={setSavedJobs}
             />
           }
         />
 
-        {/* 📄 JOB PAGE */}
         <Route
           path="/job/:id"
-          element={<JobPage />}
+          element={<JobPage jobs={jobs} />}
         />
 
       </Routes>
 
-      {/* 🔐 LOGIN MODAL */}
       {showLogin && (
         <LoginModal
           onClose={() => setShowLogin(false)}
           onLogin={() => {
-            localStorage.setItem("isLoggedIn", "true");
             setIsLoggedIn(true);
             setShowLogin(false);
           }}
         />
       )}
 
-      {/* FOOTER */}
       <Footer />
 
     </div>

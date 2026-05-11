@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-import { jobs } from "../data/jobs";
 import { useNavigate } from "react-router-dom";
 
 const categories = [
@@ -11,23 +9,23 @@ const categories = [
   "State PSC",
 ];
 
-export default function Categories() {
+export default function Categories({
+  jobs,
+  loading,
+}) {
+
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
 
-  // 🔥 shimmer loading
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1200);
-
-    return () => clearTimeout(timer);
-  }, []);
-
+  // 🔥 COUNT JOBS
   const getCount = (cat) =>
-    jobs.filter((job) => job.department === cat).length;
+    jobs.filter(
+      (job) => job.department === cat
+    ).length;
 
-  const max = Math.max(...categories.map(getCount), 1);
+  const max = Math.max(
+    ...categories.map(getCount),
+    1
+  );
 
   return (
     <div className="px-4 md:px-6 py-12 max-w-6xl mx-auto">
@@ -67,14 +65,19 @@ export default function Categories() {
         <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
 
           {categories.map((cat) => {
+
             const count = getCount(cat);
-            const width = (count / max) * 100;
+
+            const width =
+              (count / max) * 100;
 
             return (
               <div
                 key={cat}
                 onClick={() =>
-                  navigate(`/category/${cat.toLowerCase()}`)
+                  navigate(
+                    `/category/${cat.toLowerCase()}`
+                  )
                 }
                 className="border rounded-xl p-5 bg-white cursor-pointer hover:bg-stone-50 active:scale-[0.98] transition"
               >
@@ -89,10 +92,14 @@ export default function Categories() {
 
                 {/* 🔥 PROGRESS BAR */}
                 <div className="h-1 mt-3 bg-stone-100 rounded-full overflow-hidden">
+
                   <div
                     className="h-full bg-amber-600"
-                    style={{ width: `${width}%` }}
+                    style={{
+                      width: `${width}%`,
+                    }}
                   />
+
                 </div>
 
               </div>
