@@ -26,7 +26,7 @@ export default function SavedJobs({
           localStorage.getItem("token");
 
         const res = await axios.get(
-          "http://localhost:5000/api/users/saved-jobs",
+          "https://govt-jobs-backend-2egy.onrender.com/api/users/saved-jobs",
           {
             headers: {
               Authorization: `Bearer ${token}`,

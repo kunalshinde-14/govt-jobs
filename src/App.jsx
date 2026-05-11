@@ -36,7 +36,7 @@ function App() {
         if (!token) return;
 
         const res = await axios.get(
-          "http://localhost:5000/api/users/saved-jobs",
+          "https://govt-jobs-backend-2egy.onrender.com/api/users/saved-jobs",
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
@@ -55,7 +55,7 @@ function App() {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/jobs");
+        const res = await axios.get("https://govt-jobs-backend-2egy.onrender.com/api/jobs");
         setJobs(res.data);
       } catch (error) {
         console.log(error);
