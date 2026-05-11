@@ -1,52 +1,133 @@
-import { jobs } from "../data/jobs";
-import { getSavedJobs } from "../utils/storage";
+import { useEffect, useState } from "react";
+import axios from "axios";
+
 import JobCard from "../components/JobCard";
-import { useState } from "react";
-import JobDetail from "../components/JobDetail";
 
 export default function SavedJobs({
   isLoggedIn,
   setShowLogin,
+  savedJobs,
+  setSavedJobs,
 }) {
-  const [selectedJob, setSelectedJob] = useState(null);
 
-  const savedIds = getSavedJobs();
+  const [jobs, setJobs] =
+    useState([]);
 
-  const savedJobs = jobs.filter((job) =>
-    savedIds.includes(job.id)
-  );
+  const [loading, setLoading] =
+    useState(true);
+
+  useEffect(() => {
+
+    const fetchSavedJobs = async () => {
+
+      try {
+
+        const token =
+          localStorage.getItem("token");
+
+        const res = await axios.get(
+          "http://localhost:5000/api/users/saved-jobs",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        setJobs(res.data);
+
+      } catch (error) {
+
+        console.log(error);
+
+      } finally {
+
+        setLoading(false);
+
+      }
+
+    };
+
+    if (isLoggedIn) {
+
+      fetchSavedJobs();
+
+    }
+
+  }, [isLoggedIn]);
+
+
+
+  if (!isLoggedIn) {
+
+    return (
+      <div className="text-center py-20">
+
+        <h2 className="text-2xl font-semibold mb-4">
+          Login Required
+        </h2>
+
+        <button
+          onClick={() => setShowLogin(true)}
+          className="bg-black text-white px-6 py-3 rounded-xl"
+        >
+          Login
+        </button>
+
+      </div>
+    );
+  }
+
+
 
   return (
-    <div className="px-6 py-12 max-w-6xl mx-auto">
-      <h1 className="text-2xl font-semibold mb-6">
-        Saved Jobs
-      </h1>
+    <div className="max-w-6xl mx-auto px-4 py-12">
 
-      {savedJobs.length === 0 ? (
-        <p className="text-gray-500">
-          No saved jobs yet
-        </p>
-      ) : (
-        <div className="grid md:grid-cols-3 gap-5">
-          {savedJobs.map((job) => (
-            <JobCard
-              key={job.id}
-              job={job}
-              onClick={setSelectedJob}
-              isLoggedIn={isLoggedIn}        // ✅ FIXED
-              setShowLogin={setShowLogin}    // ✅ FIXED
-            />
-          ))}
+      <div className="flex justify-between items-center mb-8">
+
+        <h1 className="text-3xl font-bold">
+          Saved Jobs
+        </h1>
+
+        <span className="text-stone-500">
+          {jobs.length} saved
+        </span>
+
+      </div>
+
+      {loading ? (
+
+        <div className="text-center py-20">
+          Loading...
         </div>
+
+      ) : jobs.length === 0 ? (
+
+        <div className="text-center py-20 text-stone-500">
+          No saved jobs yet
+        </div>
+
+      ) : (
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+
+          {jobs.map((job) => (
+
+            <JobCard
+              key={job._id}
+              job={job}
+              isLoggedIn={isLoggedIn}
+              setShowLogin={setShowLogin}
+              savedJobs={savedJobs}
+              setSavedJobs={setSavedJobs}
+            />
+
+          ))}
+
+        </div>
+
       )}
 
-      {/* Modal */}
-      {selectedJob && (
-        <JobDetail
-          job={selectedJob}
-          onClose={() => setSelectedJob(null)}
-        />
-      )}
     </div>
   );
 }

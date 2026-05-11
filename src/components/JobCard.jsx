@@ -1,120 +1,181 @@
-import { useState } from "react";
+import { Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import {
-  getSavedJobs,
-  saveJob,
-  removeJob,
-} from "../utils/storage";
+import axios from "axios";
 
 export default function JobCard({
   job,
   isLoggedIn,
   setShowLogin,
+  savedJobs,
+  setSavedJobs,
 }) {
+
   const navigate = useNavigate();
 
-  const [saved, setSaved] = useState(
-    getSavedJobs().includes(job.id)
-  );
-  const [animate, setAnimate] = useState(false);
+  // ✅ ONLY FROM GLOBAL STATE
+  const isSaved =
+    savedJobs.includes(job._id);
 
-  const handleSave = (e) => {
-    e.stopPropagation(); // prevent navigation
+  // ❤️ SAVE / UNSAVE
+  const handleSave = async (e) => {
+
+    e.stopPropagation();
 
     if (!isLoggedIn) {
+
       setShowLogin(true);
+
       return;
+
     }
 
-    if (saved) {
-      removeJob(job.id);
-    } else {
-      saveJob(job.id);
+    try {
+
+      const token =
+        localStorage.getItem("token");
+
+
+
+      // 🔥 UNSAVE
+      if (isSaved) {
+
+        await axios.delete(
+          `http://localhost:5000/api/users/save-job/${job._id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const updated =
+          savedJobs.filter(
+            (id) => id !== job._id
+          );
+
+        setSavedJobs(updated);
+
+      }
+
+
+
+      // 🔥 SAVE
+      else {
+
+        await axios.post(
+          `http://localhost:5000/api/users/save-job/${job._id}`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        setSavedJobs([
+          ...savedJobs,
+          job._id,
+        ]);
+
+      }
+
+    } catch (error) {
+
+      console.log(error);
+
     }
 
-    setSaved(!saved);
-
-    // animation trigger
-    setAnimate(true);
-    setTimeout(() => setAnimate(false), 400);
   };
 
-  // 🔥 FIXED urgency logic
-  const today = new Date();
-  const lastDate = new Date(job.lastDate);
 
-  let daysLeft = Math.ceil(
-    (lastDate - today) / (1000 * 60 * 60 * 24)
-  );
-
-  daysLeft = Math.max(0, Math.min(30, daysLeft));
-
-  const progress = Math.min(
-    100,
-    Math.max(5, ((30 - daysLeft) / 30) * 100)
-  );
-
-  let color = "bg-green-500";
-  if (daysLeft < 14) color = "bg-amber-500";
-  if (daysLeft < 7) color = "bg-red-500";
 
   return (
     <div
-      onClick={() => navigate(`/job/${job.id}`)}
-      className="border rounded-xl p-5 cursor-pointer hover:bg-stone-50 active:scale-[0.98]"
+      onClick={() =>
+        navigate(`/job/${job._id}`)
+      }
+      className="border rounded-2xl p-5 hover:shadow-lg transition cursor-pointer bg-white"
     >
-      <div className="flex justify-between items-start relative">
-        <h3 className="font-semibold">{job.title}</h3>
+
+      {/* TOP */}
+      <div className="flex justify-between items-start mb-4">
+
+        <div>
+
+          <h3 className="font-semibold text-lg">
+            {job.title}
+          </h3>
+
+          <p className="text-stone-500 text-sm">
+            {job.department}
+          </p>
+
+        </div>
 
         {/* ❤️ HEART */}
-        <div className="relative">
-          {animate && (
-            <>
-              <span className="absolute inset-0 flex items-center justify-center animate-ping text-red-400 text-xl">
-                ❤️
-              </span>
-              <span className="absolute -top-2 -left-2 text-yellow-400 animate-bounce text-xs">✨</span>
-              <span className="absolute -top-2 -right-2 text-yellow-400 animate-bounce text-xs">✨</span>
-              <span className="absolute -bottom-2 -left-2 text-yellow-400 animate-bounce text-xs">✨</span>
-              <span className="absolute -bottom-2 -right-2 text-yellow-400 animate-bounce text-xs">✨</span>
-            </>
-          )}
+        <button
+          onClick={handleSave}
+          className="cursor-pointer"
+        >
 
-          <button
-            onClick={handleSave}
-            className={`text-xl transition-transform duration-300 ${
-              animate ? "scale-125" : "scale-100"
-            } ${saved ? "text-red-500" : "text-gray-400"}`}
-          >
-            {saved ? "❤️" : "🤍"}
-          </button>
-        </div>
+          <Heart
+          size={22}
+          fill={isSaved ? "#ef4444" : "none"}
+          color={isSaved ? "#ef4444" : "#a8a29e"}
+          />
+
+        </button>
+
       </div>
 
-      <p className="text-sm text-gray-500 mt-1">
-        {job.department}
-      </p>
+      {/* TAGS */}
+      <div className="flex gap-2 flex-wrap mb-4">
 
-      <div className="flex gap-2 mt-2 text-xs">
-        <span className="bg-stone-100 px-2 py-1 rounded-full">
+        <span className="bg-stone-100 px-3 py-1 rounded-full text-sm">
           {job.qualification}
         </span>
-        <span className="bg-stone-100 px-2 py-1 rounded-full">
+
+        <span className="bg-stone-100 px-3 py-1 rounded-full text-sm">
           {job.state}
         </span>
+
       </div>
 
-      <p className="text-sm mt-3">
-        Last Date: {job.lastDate}
+      {/* SALARY */}
+      <p className="text-sm mb-2">
+        💰 {job.salary}
       </p>
 
-      {/* 🔥 URGENCY PROGRESS BAR */}
-      <div className="h-1 mt-4 rounded-full bg-stone-100 overflow-hidden">
-        <div
-          className={`h-full rounded-full ${color}`}
-          style={{ width: `${progress}%` }}
-        ></div>
+      {/* VACANCIES */}
+      <p className="text-sm mb-4">
+        🪑 {job.vacancies} vacancies
+      </p>
+
+      {/* BOTTOM */}
+      <div className="flex justify-between items-center">
+
+        <p className="text-red-500 text-sm font-medium">
+          Last Date: {job.lastDate}
+        </p>
+
+        <button
+          onClick={(e) => {
+
+            e.stopPropagation();
+
+            window.open(
+              job.applyLink,
+              "_blank"
+            );
+
+          }}
+          className="bg-black text-white px-4 py-2 rounded-xl text-sm"
+        >
+          Apply
+        </button>
+
       </div>
+
     </div>
   );
 }

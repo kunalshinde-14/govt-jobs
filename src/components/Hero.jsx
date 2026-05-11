@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { jobs } from "../data/jobs";
+
 
 export default function Hero({
+  jobs,
   search,
   setSearch,
   filters,
