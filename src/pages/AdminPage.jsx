@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 
 export default function AdminPage() {
 
+  // 🔥 FORM STATE
   const [formData, setFormData] =
     useState({
       title: "",
@@ -15,8 +16,49 @@ export default function AdminPage() {
       applyLink: "",
     });
 
+  // 🔥 ALL JOBS
+  const [jobs, setJobs] =
+    useState([]);
+
+  // 🔥 LOADING
   const [loading, setLoading] =
     useState(false);
+
+  // 🔥 EDIT MODE
+  const [editingId, setEditingId] =
+    useState(null);
+
+
+
+
+  // ✅ FETCH JOBS
+  const fetchJobs = async () => {
+
+    try {
+
+      const res = await axios.get(
+        "http://localhost:5000"
+      );
+
+      setJobs(res.data);
+
+    } catch (error) {
+
+      console.log(error);
+
+    }
+
+  };
+
+
+
+
+  // ✅ LOAD JOBS
+  useEffect(() => {
+
+    fetchJobs();
+
+  }, []);
 
 
 
@@ -34,7 +76,7 @@ export default function AdminPage() {
 
 
 
-  // 🔥 SUBMIT JOB
+  // 🔥 ADD / UPDATE JOB
   const handleSubmit = async (e) => {
 
     e.preventDefault();
@@ -43,28 +85,45 @@ export default function AdminPage() {
 
       setLoading(true);
 
-      // ✅ SEND DATA
-      await axios.post(
-        "https://govt-jobs-backend-2egy.onrender.com/api/jobs",
-        {
-          ...formData,
+      const payload = {
+        ...formData,
 
-          // ✅ IMPORTANT
-          vacancies: Number(
-            formData.vacancies
-          ),
-        }
-      );
+        vacancies: Number(
+          formData.vacancies
+        ),
+      };
 
 
 
-      alert(
-        "Job added successfully"
-      );
+      // ✅ UPDATE
+      if (editingId) {
+
+        await axios.put(
+          `https://govt-jobs-backend-2egy.onrender.com/api/jobs/${editingId}`,
+          payload
+        );
+
+        alert("Job updated");
+
+      }
 
 
 
-      // ✅ RESET FORM
+      // ✅ ADD
+      else {
+
+        await axios.post(
+          "https://govt-jobs-backend-2egy.onrender.com/api/jobs",
+          payload
+        );
+
+        alert("Job added");
+
+      }
+
+
+
+      // ✅ RESET
       setFormData({
         title: "",
         department: "",
@@ -76,11 +135,18 @@ export default function AdminPage() {
         applyLink: "",
       });
 
+
+
+
+      setEditingId(null);
+
+      fetchJobs();
+
     } catch (error) {
 
       console.log(error);
 
-      alert("Failed to add job");
+      alert("Operation failed");
 
     } finally {
 
@@ -93,9 +159,72 @@ export default function AdminPage() {
 
 
 
-  return (
+  // 🔥 DELETE JOB
+  const handleDelete = async (id) => {
 
-    <div className="max-w-3xl mx-auto px-4 py-12">
+    const confirmDelete =
+      confirm(
+        "Delete this job?"
+      );
+
+    if (!confirmDelete) return;
+
+    try {
+
+      await axios.delete(
+        `https://govt-jobs-backend-2egy.onrender.com/api/jobs/${id}`
+      );
+
+
+
+      setJobs(
+        jobs.filter(
+          (job) => job._id !== id
+        )
+      );
+
+    } catch (error) {
+
+      console.log(error);
+
+      alert("Delete failed");
+
+    }
+
+  };
+
+
+
+
+  // 🔥 EDIT JOB
+  const handleEdit = (job) => {
+
+    setEditingId(job._id);
+
+    setFormData({
+      title: job.title,
+      department: job.department,
+      qualification: job.qualification,
+      state: job.state,
+      salary: job.salary,
+      vacancies: job.vacancies,
+      lastDate: job.lastDate,
+      applyLink: job.applyLink,
+    });
+
+
+
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+
+  };
+
+    return (
+
+    <div className="max-w-6xl mx-auto px-4 py-12">
 
       {/* HEADER */}
       <h1 className="text-3xl font-bold mb-8">
@@ -107,10 +236,9 @@ export default function AdminPage() {
       {/* FORM */}
       <form
         onSubmit={handleSubmit}
-        className="space-y-5 bg-white border rounded-2xl p-6"
+        className="space-y-5 bg-white border rounded-2xl p-6 mb-12"
       >
 
-        {/* TITLE */}
         <input
           type="text"
           name="title"
@@ -123,7 +251,6 @@ export default function AdminPage() {
 
 
 
-        {/* DEPARTMENT */}
         <input
           type="text"
           name="department"
@@ -136,7 +263,6 @@ export default function AdminPage() {
 
 
 
-        {/* QUALIFICATION */}
         <input
           type="text"
           name="qualification"
@@ -149,7 +275,6 @@ export default function AdminPage() {
 
 
 
-        {/* STATE */}
         <input
           type="text"
           name="state"
@@ -162,7 +287,6 @@ export default function AdminPage() {
 
 
 
-        {/* SALARY */}
         <input
           type="text"
           name="salary"
@@ -175,7 +299,6 @@ export default function AdminPage() {
 
 
 
-        {/* VACANCIES */}
         <input
           type="number"
           name="vacancies"
@@ -188,7 +311,6 @@ export default function AdminPage() {
 
 
 
-        {/* LAST DATE */}
         <input
           type="date"
           name="lastDate"
@@ -200,7 +322,6 @@ export default function AdminPage() {
 
 
 
-        {/* APPLY LINK */}
         <input
           type="text"
           name="applyLink"
@@ -221,12 +342,84 @@ export default function AdminPage() {
         >
 
           {loading
-            ? "Adding..."
+            ? "Saving..."
+            : editingId
+            ? "Update Job"
             : "Add Job"}
 
         </button>
 
       </form>
+
+
+
+
+
+      {/* JOBS LIST */}
+      <div>
+
+        <h2 className="text-2xl font-semibold mb-6">
+          Manage Jobs
+        </h2>
+
+
+
+        <div className="space-y-4">
+
+          {jobs.map((job) => (
+
+            <div
+              key={job._id}
+              className="bg-white border rounded-2xl p-5 flex justify-between items-center"
+            >
+
+              <div>
+
+                <h3 className="font-semibold text-lg">
+                  {job.title}
+                </h3>
+
+                <p className="text-stone-500 text-sm">
+                  {job.department}
+                </p>
+
+              </div>
+
+
+
+              <div className="flex items-center">
+
+                {/* EDIT */}
+                <button
+                  onClick={() =>
+                    handleEdit(job)
+                  }
+                  className="bg-blue-500 text-white px-4 py-2 rounded-xl mr-3"
+                >
+                  Edit
+                </button>
+
+
+
+                {/* DELETE */}
+                <button
+                  onClick={() =>
+                    handleDelete(job._id)
+                  }
+                  className="bg-red-500 text-white px-4 py-2 rounded-xl"
+                >
+                  Delete
+                </button>
+
+              </div>
+
+            </div>
+
+          ))}
+
+        </div>
+
+      </div>
 
     </div>
 

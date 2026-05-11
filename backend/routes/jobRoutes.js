@@ -11,8 +11,8 @@ router.get("/", async (req, res) => {
 
   try {
 
-    const jobs = await Job.find()
-      .sort({ createdAt: -1 });
+    const jobs =
+      await Job.find();
 
     res.json(jobs);
 
@@ -28,38 +28,14 @@ router.get("/", async (req, res) => {
 
 
 
-// ✅ ADD NEW JOB
+
+// ✅ ADD JOB
 router.post("/", async (req, res) => {
 
   try {
 
-    const {
-      title,
-      department,
-      qualification,
-      state,
-      salary,
-      vacancies,
-      lastDate,
-      applyLink,
-    } = req.body;
-
-
-
-    const newJob = new Job({
-
-      title,
-      department,
-      qualification,
-      state,
-      salary,
-      vacancies,
-      lastDate,
-      applyLink,
-
-    });
-
-
+    const newJob =
+      new Job(req.body);
 
     const savedJob =
       await newJob.save();
@@ -78,6 +54,34 @@ router.post("/", async (req, res) => {
 
 
 
+
+// ✅ UPDATE JOB
+router.put("/:id", async (req, res) => {
+
+  try {
+
+    const updatedJob =
+      await Job.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        { new: true }
+      );
+
+    res.json(updatedJob);
+
+  } catch (error) {
+
+    res.status(500).json({
+      message: error.message,
+    });
+
+  }
+
+});
+
+
+
+
 // ✅ DELETE JOB
 router.delete("/:id", async (req, res) => {
 
@@ -88,7 +92,8 @@ router.delete("/:id", async (req, res) => {
     );
 
     res.json({
-      message: "Job deleted",
+      message:
+        "Job deleted successfully",
     });
 
   } catch (error) {
