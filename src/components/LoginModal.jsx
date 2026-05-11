@@ -36,8 +36,8 @@ export default function LoginModal({
     try {
 
       const url = isSignup
-        ? "http://localhost:5000/api/auth/signup"
-        : "http://localhost:5000/api/auth/login";
+        ? "https://govt-jobs-backend-2egy.onrender.com/api/auth/signup"
+        : "https://govt-jobs-backend-2egy.onrender.com/api/auth/login";
 
       const body = isSignup
         ? {

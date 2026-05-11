@@ -40,7 +40,7 @@ export default function JobCard({
       if (isSaved) {
 
         await axios.delete(
-          `http://localhost:5000/api/users/save-job/${job._id}`,
+          `https://govt-jobs-backend-2egy.onrender.com/api/users/save-job/${job._id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -63,7 +63,7 @@ export default function JobCard({
       else {
 
         await axios.post(
-          `http://localhost:5000/api/users/save-job/${job._id}`,
+          `https://govt-jobs-backend-2egy.onrender.com/api/users/save-job/${job._id}`,
           {},
           {
             headers: {
