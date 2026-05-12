@@ -1,32 +1,47 @@
-import { useEffect, useState } from "react";
+import { Heart } from "lucide-react";
+import BASE_URL from "../utils/api";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-import JobCard from "../components/JobCard";
-
-export default function SavedJobs({
+export default function JobCard({
+  job,
   isLoggedIn,
   setShowLogin,
   savedJobs,
   setSavedJobs,
 }) {
 
-  const [jobs, setJobs] =
-    useState([]);
+  const navigate = useNavigate();
 
-  const [loading, setLoading] =
-    useState(true);
+  // ✅ ONLY FROM GLOBAL STATE
+  const isSaved =
+    savedJobs.includes(job._id);
 
-  useEffect(() => {
+  // ❤️ SAVE / UNSAVE
+  const handleSave = async (e) => {
 
-    const fetchSavedJobs = async () => {
+    e.stopPropagation();
 
-      try {
+    if (!isLoggedIn) {
 
-        const token =
-          localStorage.getItem("token");
+      setShowLogin(true);
 
-        const res = await axios.get(
-          "https://govt-jobs-backend-2egy.onrender.com/api/users/saved-jobs",
+      return;
+
+    }
+
+    try {
+
+      const token =
+        localStorage.getItem("token");
+
+
+
+      // 🔥 UNSAVE
+      if (isSaved) {
+
+        await axios.delete(
+          `${BASE_URL}/api/users/save-job/${job._id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -34,99 +49,133 @@ export default function SavedJobs({
           }
         );
 
-        setJobs(res.data);
+        const updated =
+          savedJobs.filter(
+            (id) => id !== job._id
+          );
 
-      } catch (error) {
-
-        console.log(error);
-
-      } finally {
-
-        setLoading(false);
+        setSavedJobs(updated);
 
       }
 
-    };
 
-    if (isLoggedIn) {
 
-      fetchSavedJobs();
+      // 🔥 SAVE
+      else {
+
+        await axios.post(
+          `${BASE_URL}/api/users/save-job/${job._id}`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        setSavedJobs([
+          ...savedJobs,
+          job._id,
+        ]);
+
+      }
+
+    } catch (error) {
+
+      console.log(error);
 
     }
 
-  }, [isLoggedIn]);
-
-
-
-  if (!isLoggedIn) {
-
-    return (
-      <div className="text-center py-20">
-
-        <h2 className="text-2xl font-semibold mb-4">
-          Login Required
-        </h2>
-
-        <button
-          onClick={() => setShowLogin(true)}
-          className="bg-black text-white px-6 py-3 rounded-xl"
-        >
-          Login
-        </button>
-
-      </div>
-    );
-  }
+  };
 
 
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-12">
+    <div
+      onClick={() =>
+        navigate(`/job/${job._id}`)
+      }
+      className="border rounded-2xl p-5 hover:shadow-lg transition cursor-pointer bg-white"
+    >
 
-      <div className="flex justify-between items-center mb-8">
+      {/* TOP */}
+      <div className="flex justify-between items-start mb-4">
 
-        <h1 className="text-3xl font-bold">
-          Saved Jobs
-        </h1>
+        <div>
 
-        <span className="text-stone-500">
-          {jobs.length} saved
+          <h3 className="font-semibold text-lg">
+            {job.title}
+          </h3>
+
+          <p className="text-stone-500 text-sm">
+            {job.department}
+          </p>
+
+        </div>
+
+        {/* ❤️ HEART */}
+        <button
+          onClick={handleSave}
+          className="cursor-pointer"
+        >
+
+          <Heart
+          size={22}
+          fill={isSaved ? "#ef4444" : "none"}
+          color={isSaved ? "#ef4444" : "#a8a29e"}
+          />
+
+        </button>
+
+      </div>
+
+      {/* TAGS */}
+      <div className="flex gap-2 flex-wrap mb-4">
+
+        <span className="bg-stone-100 px-3 py-1 rounded-full text-sm">
+          {job.qualification}
+        </span>
+
+        <span className="bg-stone-100 px-3 py-1 rounded-full text-sm">
+          {job.state}
         </span>
 
       </div>
 
-      {loading ? (
+      {/* SALARY */}
+      <p className="text-sm mb-2">
+        💰 {job.salary}
+      </p>
 
-        <div className="text-center py-20">
-          Loading...
-        </div>
+      {/* VACANCIES */}
+      <p className="text-sm mb-4">
+        🪑 {job.vacancies} vacancies
+      </p>
 
-      ) : jobs.length === 0 ? (
+      {/* BOTTOM */}
+      <div className="flex justify-between items-center">
 
-        <div className="text-center py-20 text-stone-500">
-          No saved jobs yet
-        </div>
+        <p className="text-red-500 text-sm font-medium">
+          Last Date: {job.lastDate}
+        </p>
 
-      ) : (
+        <button
+          onClick={(e) => {
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            e.stopPropagation();
 
-          {jobs.map((job) => (
+            window.open(
+              job.applyLink,
+              "_blank"
+            );
 
-            <JobCard
-              key={job._id}
-              job={job}
-              isLoggedIn={isLoggedIn}
-              setShowLogin={setShowLogin}
-              savedJobs={savedJobs}
-              setSavedJobs={setSavedJobs}
-            />
+          }}
+          className="bg-black text-white px-4 py-2 rounded-xl text-sm"
+        >
+          Apply
+        </button>
 
-          ))}
-
-        </div>
-
-      )}
+      </div>
 
     </div>
   );
