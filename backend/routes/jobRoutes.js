@@ -1,19 +1,15 @@
 const express = require("express");
-
 const router = express.Router();
-
 const Job = require("../models/Job");
+const adminMiddleware = require("../middleware/adminMiddleware");
 
 
-
-// ✅ GET ALL JOBS
+// ✅ GET ALL JOBS — public
 router.get("/", async (req, res) => {
 
   try {
 
-    const jobs =
-      await Job.find();
-
+    const jobs = await Job.find();
     res.json(jobs);
 
   } catch (error) {
@@ -27,85 +23,85 @@ router.get("/", async (req, res) => {
 });
 
 
+// 🔒 ADD JOB — admin only
+router.post(
+  "/",
+  adminMiddleware,
+  async (req, res) => {
 
+    try {
 
-// ✅ ADD JOB
-router.post("/", async (req, res) => {
+      const newJob = new Job(req.body);
+      const savedJob = await newJob.save();
+      res.status(201).json(savedJob);
 
-  try {
+    } catch (error) {
 
-    const newJob =
-      new Job(req.body);
+      res.status(500).json({
+        message: error.message,
+      });
 
-    const savedJob =
-      await newJob.save();
-
-    res.status(201).json(savedJob);
-
-  } catch (error) {
-
-    res.status(500).json({
-      message: error.message,
-    });
+    }
 
   }
-
-});
-
+);
 
 
+// 🔒 UPDATE JOB — admin only
+router.put(
+  "/:id",
+  adminMiddleware,
+  async (req, res) => {
 
-// ✅ UPDATE JOB
-router.put("/:id", async (req, res) => {
+    try {
 
-  try {
+      const updatedJob =
+        await Job.findByIdAndUpdate(
+          req.params.id,
+          req.body,
+          { new: true }
+        );
 
-    const updatedJob =
-      await Job.findByIdAndUpdate(
-        req.params.id,
-        req.body,
-        { new: true }
+      res.json(updatedJob);
+
+    } catch (error) {
+
+      res.status(500).json({
+        message: error.message,
+      });
+
+    }
+
+  }
+);
+
+
+// 🔒 DELETE JOB — admin only
+router.delete(
+  "/:id",
+  adminMiddleware,
+  async (req, res) => {
+
+    try {
+
+      await Job.findByIdAndDelete(
+        req.params.id
       );
 
-    res.json(updatedJob);
+      res.json({
+        message: "Job deleted successfully",
+      });
 
-  } catch (error) {
+    } catch (error) {
 
-    res.status(500).json({
-      message: error.message,
-    });
+      res.status(500).json({
+        message: error.message,
+      });
 
-  }
-
-});
-
-
-
-
-// ✅ DELETE JOB
-router.delete("/:id", async (req, res) => {
-
-  try {
-
-    await Job.findByIdAndDelete(
-      req.params.id
-    );
-
-    res.json({
-      message:
-        "Job deleted successfully",
-    });
-
-  } catch (error) {
-
-    res.status(500).json({
-      message: error.message,
-    });
+    }
 
   }
-
-});
-
+);
 
 
 module.exports = router;
