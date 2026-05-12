@@ -95,12 +95,9 @@ export default function AdminPage() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-12">
 
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Admin Panel</h1>
-        <button onClick={handleLogout} className="bg-red-500 text-white px-4 py-2 rounded-xl text-sm">
-          Logout
-        </button>
-      </div>
+      <h1 className="text-3xl font-bold mb-8">
+  Admin Panel
+</h1>
 
       <form onSubmit={handleSubmit} className="space-y-5 bg-white border rounded-2xl p-6 mb-12">
 
