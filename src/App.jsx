@@ -1,3 +1,5 @@
+import BASE_URL from "./utils/api";
+import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -16,6 +18,7 @@ import SavedJobs from "./pages/SavedJobs";
 import CategoryPage from "./pages/CategoryPage";
 import JobPage from "./pages/JobPage";
 import AdminPage from "./pages/AdminPage";
+import AdminLogin from "./pages/AdminLogin";
 
 function App() {
 
@@ -114,7 +117,7 @@ function App() {
       try {
 
         const res = await axios.get(
-          "https://govt-jobs-backend-2egy.onrender.com/api/jobs"
+          `${BASE_URL}/api/jobs`
         );
 
         setJobs(res.data);
@@ -225,16 +228,21 @@ function App() {
             />
           }
         />
-
+      <Route
+  path="/admin-login"
+  element={<AdminLogin />}
+/>
 
 
         {/* ADMIN PAGE */}
         <Route
-          path="/admin"
-          element={
-            <AdminPage />
-          }
-        />
+  path="/admin"
+  element={
+    <AdminProtectedRoute>
+      <AdminPage />
+    </AdminProtectedRoute>
+  }
+/>
 
 
 

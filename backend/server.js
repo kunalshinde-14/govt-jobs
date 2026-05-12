@@ -10,6 +10,10 @@ dns.setServers([
   '8.8.8.8',
 ])
 
+const adminRoutes =
+  require("./routes/adminRoutes");
+
+
 const cors = require("cors");
 require("dotenv").config();
 
@@ -21,8 +25,12 @@ const jobRoutes = require("./routes/jobRoutes");
 const authRoutes = require("./routes/authRoutes");
 
 app.use("/api/jobs", jobRoutes);
-app.use("/api/auth", authRoutes);  
-app.use("/api/users", userRoutes); 
+
+app.use("/api/auth", authRoutes);
+
+app.use("/api/users", userRoutes);
+
+app.use("/api/admin", adminRoutes);
 // 🔥 MongoDB Connection
 mongoose
   .connect(process.env.MONGO_URI)
