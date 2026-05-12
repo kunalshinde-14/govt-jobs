@@ -1,38 +1,38 @@
 import { Navigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
 
 export default function AdminProtectedRoute({ children }) {
 
+  const token = localStorage.getItem("adminToken");
+
+  // NO TOKEN = redirect
+  if (!token) {
+    return <Navigate to="/admin-login" replace />;
+  }
+
+  // DECODE WITHOUT LIBRARY (just base64 decode the payload)
   try {
 
-    const token =
-      localStorage.getItem("adminToken");
+    const payload = JSON.parse(
+      atob(token.split(".")[1])
+    );
 
-    if (!token) {
-      return <Navigate to="/admin-login" />;
+    // CHECK admin: true
+    if (!payload.admin) {
+      return <Navigate to="/admin-login" replace />;
     }
 
-    // ✅ VERIFY TOKEN HAS admin: true
-    const decoded = jwtDecode(token);
-
-    if (!decoded.admin) {
-      return <Navigate to="/admin-login" />;
-    }
-
-    // ✅ CHECK NOT EXPIRED
-    const now = Date.now() / 1000;
-    if (decoded.exp < now) {
+    // CHECK NOT EXPIRED
+    if (payload.exp < Date.now() / 1000) {
       localStorage.removeItem("adminToken");
-      return <Navigate to="/admin-login" />;
+      return <Navigate to="/admin-login" replace />;
     }
 
     return children;
 
   } catch (error) {
 
-    // INVALID TOKEN
     localStorage.removeItem("adminToken");
-    return <Navigate to="/admin-login" />;
+    return <Navigate to="/admin-login" replace />;
 
   }
 
