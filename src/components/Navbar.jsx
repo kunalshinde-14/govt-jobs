@@ -13,9 +13,9 @@ export default function Navbar({
 
   // ✅ ADMIN CHECK
   const isAdmin =
-    localStorage.getItem(
-      "isAdmin"
-    );
+  localStorage.getItem(
+    "adminToken"
+  );
 
 
 
@@ -23,18 +23,13 @@ export default function Navbar({
   // 🔥 ADMIN LOGOUT
   const handleAdminLogout = () => {
 
-    localStorage.removeItem(
-      "isAdmin"
-    );
+  localStorage.removeItem(
+    "adminToken"
+  );
 
-    localStorage.removeItem(
-      "adminToken"
-    );
+  window.location.href = "/";
 
-    window.location.href = "/";
-
-  };
-
+};
 
 
 
