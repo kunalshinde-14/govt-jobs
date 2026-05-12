@@ -78,7 +78,7 @@ function App() {
         }
 
         const res = await axios.get(
-          "https://govt-jobs-backend-2egy.onrender.com/api/users/saved-jobs",
+          `${BASE_URL}/api/users/saved-jobs`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

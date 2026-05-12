@@ -2,7 +2,8 @@ const express = require("express");
 const router = express.Router();
 const Job = require("../models/Job");
 const adminMiddleware = require("../middleware/adminMiddleware");
-
+const verifyAdmin =
+  require("../middleware/verifyAdmin");
 
 // ✅ GET ALL JOBS — public
 router.get("/", async (req, res) => {
@@ -26,6 +27,7 @@ router.get("/", async (req, res) => {
 // 🔒 ADD JOB — admin only
 router.post(
   "/",
+  verifyAdmin,
   adminMiddleware,
   async (req, res) => {
 
@@ -50,6 +52,7 @@ router.post(
 // 🔒 UPDATE JOB — admin only
 router.put(
   "/:id",
+  verifyAdmin,
   adminMiddleware,
   async (req, res) => {
 
@@ -79,6 +82,7 @@ router.put(
 // 🔒 DELETE JOB — admin only
 router.delete(
   "/:id",
+  verifyAdmin,
   adminMiddleware,
   async (req, res) => {
 

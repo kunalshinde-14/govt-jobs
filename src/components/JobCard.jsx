@@ -1,4 +1,5 @@
 import { Heart } from "lucide-react";
+import BASE_URL from "../utils/api";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -40,7 +41,7 @@ export default function JobCard({
       if (isSaved) {
 
         await axios.delete(
-          `https://govt-jobs-backend-2egy.onrender.com/api/users/save-job/${job._id}`,
+          `${BASE_URL}/api/users/save-job/${job._id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -63,7 +64,7 @@ export default function JobCard({
       else {
 
         await axios.post(
-          `https://govt-jobs-backend-2egy.onrender.com/api/users/save-job/${job._id}`,
+          `${BASE_URL}/api/users/save-job/${job._id}`,
           {},
           {
             headers: {
