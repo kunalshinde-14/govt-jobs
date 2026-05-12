@@ -21,7 +21,7 @@ export default function AdminLogin() {
       );
 
       localStorage.setItem("adminToken", res.data.token);
-
+      localStorage.setItem("isAdmin", "true");
       navigate("/admin");
 
     } catch (error) {
