@@ -4,24 +4,18 @@ module.exports = (req, res, next) => {
 
   try {
 
-    const authHeader =
-      req.headers.authorization;
+    const authHeader = req.headers.authorization;
 
     if (!authHeader) {
-      return res.status(401).json({
-        message: "No token",
-      });
+      return res.status(401).json({ message: "No token" });
     }
 
-    // 🔥 TOKEN FORMAT:
-    // Bearer TOKEN
+    const token = authHeader.split(" ")[1];
 
-    const token =
-      authHeader.split(" ")[1];
-
+    // ✅ USE ENV VAR NOT HARDCODED STRING
     const decoded = jwt.verify(
       token,
-      "secretkey"
+      process.env.JWT_SECRET
     );
 
     req.userId = decoded.id;
@@ -30,9 +24,7 @@ module.exports = (req, res, next) => {
 
   } catch (error) {
 
-    res.status(401).json({
-      message: "Invalid token",
-    });
+    res.status(401).json({ message: "Invalid token" });
 
   }
 

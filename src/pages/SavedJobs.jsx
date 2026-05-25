@@ -1,10 +1,8 @@
-import { Heart } from "lucide-react";
-import BASE_URL from "../utils/api";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import JobCard from "../components/JobCard";
 
-export default function JobCard({
-  job,
+export default function SavedJobs({
+  jobs,
   isLoggedIn,
   setShowLogin,
   savedJobs,
@@ -13,169 +11,63 @@ export default function JobCard({
 
   const navigate = useNavigate();
 
-  // ✅ ONLY FROM GLOBAL STATE
-  const isSaved =
-    savedJobs.includes(job._id);
+  // GET FULL JOB OBJECTS FOR SAVED IDS
+  const savedJobsList = jobs.filter((job) =>
+    savedJobs.includes(job._id)
+  );
 
-  // ❤️ SAVE / UNSAVE
-  const handleSave = async (e) => {
-
-    e.stopPropagation();
-
-    if (!isLoggedIn) {
-
-      setShowLogin(true);
-
-      return;
-
-    }
-
-    try {
-
-      const token =
-        localStorage.getItem("token");
-
-
-
-      // 🔥 UNSAVE
-      if (isSaved) {
-
-        await axios.delete(
-          `${BASE_URL}/api/users/save-job/${job._id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        const updated =
-          savedJobs.filter(
-            (id) => id !== job._id
-          );
-
-        setSavedJobs(updated);
-
-      }
-
-
-
-      // 🔥 SAVE
-      else {
-
-        await axios.post(
-          `${BASE_URL}/api/users/save-job/${job._id}`,
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        setSavedJobs([
-          ...savedJobs,
-          job._id,
-        ]);
-
-      }
-
-    } catch (error) {
-
-      console.log(error);
-
-    }
-
-  };
-
-
+  if (!isLoggedIn) {
+    return (
+      <div className="max-w-6xl mx-auto px-4 py-20 text-center">
+        <h2 className="text-2xl font-semibold mb-4">
+          Login to view saved jobs
+        </h2>
+        <button
+          onClick={() => setShowLogin(true)}
+          className="bg-black text-white px-6 py-3 rounded-xl"
+        >
+          Login
+        </button>
+      </div>
+    );
+  }
 
   return (
-    <div
-      onClick={() =>
-        navigate(`/job/${job._id}`)
-      }
-      className="border rounded-2xl p-5 hover:shadow-lg transition cursor-pointer bg-white"
-    >
+    <div className="max-w-6xl mx-auto px-4 py-12">
 
-      {/* TOP */}
-      <div className="flex justify-between items-start mb-4">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-semibold">
+          Saved Jobs
+        </h2>
+        <span className="text-sm text-stone-500">
+          {savedJobsList.length} saved
+        </span>
+      </div>
 
-        <div>
-
-          <h3 className="font-semibold text-lg">
-            {job.title}
-          </h3>
-
-          <p className="text-stone-500 text-sm">
-            {job.department}
-          </p>
-
+      {savedJobsList.length === 0 ? (
+        <div className="text-center py-20 text-stone-500">
+          <p className="text-lg mb-4">No saved jobs yet</p>
+          <button
+            onClick={() => navigate("/")}
+            className="bg-black text-white px-6 py-3 rounded-xl text-sm"
+          >
+            Browse Jobs
+          </button>
         </div>
-
-        {/* ❤️ HEART */}
-        <button
-          onClick={handleSave}
-          className="cursor-pointer"
-        >
-
-          <Heart
-          size={22}
-          fill={isSaved ? "#ef4444" : "none"}
-          color={isSaved ? "#ef4444" : "#a8a29e"}
-          />
-
-        </button>
-
-      </div>
-
-      {/* TAGS */}
-      <div className="flex gap-2 flex-wrap mb-4">
-
-        <span className="bg-stone-100 px-3 py-1 rounded-full text-sm">
-          {job.qualification}
-        </span>
-
-        <span className="bg-stone-100 px-3 py-1 rounded-full text-sm">
-          {job.state}
-        </span>
-
-      </div>
-
-      {/* SALARY */}
-      <p className="text-sm mb-2">
-        💰 {job.salary}
-      </p>
-
-      {/* VACANCIES */}
-      <p className="text-sm mb-4">
-        🪑 {job.vacancies} vacancies
-      </p>
-
-      {/* BOTTOM */}
-      <div className="flex justify-between items-center">
-
-        <p className="text-red-500 text-sm font-medium">
-          Last Date: {job.lastDate}
-        </p>
-
-        <button
-          onClick={(e) => {
-
-            e.stopPropagation();
-
-            window.open(
-              job.applyLink,
-              "_blank"
-            );
-
-          }}
-          className="bg-black text-white px-4 py-2 rounded-xl text-sm"
-        >
-          Apply
-        </button>
-
-      </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+          {savedJobsList.map((job) => (
+            <JobCard
+              key={job._id}
+              job={job}
+              isLoggedIn={isLoggedIn}
+              setShowLogin={setShowLogin}
+              savedJobs={savedJobs}
+              setSavedJobs={setSavedJobs}
+            />
+          ))}
+        </div>
+      )}
 
     </div>
   );
