@@ -20,23 +20,54 @@ export default function LatestJobs({
   // 🔍 FILTER — exclude closing soon + apply search/filters
   const filteredJobs = jobs.filter((job) => {
 
-    if (closingSoonIds.includes(job._id)) return false;
+  if (!job) return false;
 
-    const matchesSearch =
-      search === "" ||
-      job.title.toLowerCase().includes(search.toLowerCase()) ||
-      job.department.toLowerCase().includes(search.toLowerCase());
+  if (closingSoonIds.includes(job?._id))
+    return false;
 
-    const matchesQualification =
-      filters.qualification.length === 0 ||
-      filters.qualification.includes(job.qualification);
+  const matchesSearch =
 
-    const matchesState =
-      filters.state === "" ||
-      job.state === filters.state;
+    search === "" ||
 
-    return matchesSearch && matchesQualification && matchesState;
-  });
+    job?.title
+      ?.toLowerCase()
+      ?.includes(
+        search.toLowerCase()
+      ) ||
+
+    job?.department
+      ?.toLowerCase()
+      ?.includes(
+        search.toLowerCase()
+      );
+
+
+
+  const matchesQualification =
+
+    filters.qualification.length === 0 ||
+
+    filters.qualification.includes(
+      job?.qualification
+    );
+
+
+
+  const matchesState =
+
+    filters.state === "" ||
+
+    job?.state === filters.state;
+
+
+
+  return (
+    matchesSearch &&
+    matchesQualification &&
+    matchesState
+  );
+
+});
 
   return (
     <div className="px-4 md:px-6 py-12 max-w-6xl mx-auto">
