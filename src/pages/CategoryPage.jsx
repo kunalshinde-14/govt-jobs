@@ -11,23 +11,18 @@ export default function CategoryPage({
 
   const { category } = useParams();
 
+  // ✅ SAFE GUARD
   if (!category) return null;
 
   const filteredJobs = jobs.filter(
     (job) => job.department.toLowerCase() === category.toLowerCase()
   );
 
-  // ✅ PROPER CAPITALIZE — handles "state psc" → "State PSC"
-  const displayName = category
-    .split(" ")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
-
   return (
     <div className="max-w-6xl mx-auto px-4 py-12">
 
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">{displayName} Jobs</h1>
+        <h1 className="text-3xl font-bold capitalize">{category} Jobs</h1>
         <span className="text-stone-500">{filteredJobs.length} jobs</span>
       </div>
 
