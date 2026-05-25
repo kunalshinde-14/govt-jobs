@@ -16,10 +16,10 @@ export default function ClosingSoon({
   // 🔥 REMOVE DUPLICATES FROM LATEST
   const closingJobs = [...jobs]
     .sort(
-  (a, b) =>
-    new Date(a?.lastDate || 0) -
-    new Date(b?.lastDate || 0)
-)
+      (a, b) =>
+        new Date(a.lastDate) -
+        new Date(b.lastDate)
+    )
     .filter(
       (job, index, self) =>
         index ===
@@ -27,7 +27,7 @@ export default function ClosingSoon({
           (j) => j._id === job._id
         )
     )
-    .slice(0, 3);
+    .slice(0, 6);
 
   return (
     <div className="px-4 md:px-6 py-12 max-w-6xl mx-auto">
