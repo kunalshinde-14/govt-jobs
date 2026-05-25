@@ -16,10 +16,10 @@ export default function ClosingSoon({
   // 🔥 REMOVE DUPLICATES FROM LATEST
   const closingJobs = [...jobs]
     .sort(
-      (a, b) =>
-        new Date(a.lastDate) -
-        new Date(b.lastDate)
-    )
+  (a, b) =>
+    new Date(a?.lastDate || 0) -
+    new Date(b?.lastDate || 0)
+)
     .filter(
       (job, index, self) =>
         index ===
