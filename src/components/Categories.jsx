@@ -6,7 +6,9 @@ const categories = [
   "Banking",
   "UPSC",
   "Defence",
-  "State PSC",
+  "MPSC",
+  "Police",
+  "Teaching",
 ];
 
 export default function Categories({
