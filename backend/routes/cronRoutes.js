@@ -1,4 +1,5 @@
 const express = require("express");
+
 const router = express.Router();
 
 const Job = require("../models/Job");
@@ -11,11 +12,16 @@ router.get("/expired", async (req, res) => {
 
     today.setHours(0, 0, 0, 0);
 
-    const result = await Job.deleteMany({
-      lastDate: {
-        $lt: today.toISOString().split("T")[0],
-      },
-    });
+    const result =
+      await Job.deleteMany({
+
+        lastDate: {
+          $lt: today
+            .toISOString()
+            .split("T")[0],
+        },
+
+      });
 
     res.json({
       success: true,
