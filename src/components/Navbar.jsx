@@ -1,147 +1,66 @@
 import { Link, useLocation } from "react-router-dom";
 
-export default function Navbar({
-  savedJobs,
-}) {
+export default function Navbar({ savedJobs }) {
 
-  const location =
-    useLocation();
+  const location = useLocation();
+  const user = JSON.parse(localStorage.getItem("user"));
+  const isAdmin = localStorage.getItem("adminToken");
 
-  const user = JSON.parse(
-    localStorage.getItem("user")
-  );
-
-  // ✅ ADMIN CHECK
-  const isAdmin =
-  localStorage.getItem(
-    "adminToken"
-  );
-
-
-
-
-  // 🔥 ADMIN LOGOUT
   const handleAdminLogout = () => {
+    localStorage.removeItem("adminToken");
+    window.location.href = "/";
+  };
 
-  localStorage.removeItem(
-    "adminToken"
-  );
-
-  window.location.href = "/";
-
-};
-
-
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    localStorage.removeItem("savedJobs");
+    window.location.href = "/";
+  };
 
   return (
-
     <nav className="border-b bg-white sticky top-0 z-50">
-
-      <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+      <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
 
         {/* LOGO */}
-        <Link
-          to="/"
-          className="text-2xl font-bold text-amber-600"
-        >
+        <Link to="/" className="text-xl font-bold text-amber-600 shrink-0">
           GovtJobs
         </Link>
 
+        {/* NAV — no wrap, all on one line */}
+        <div className="flex items-center gap-3 text-sm">
 
-
-        {/* NAV */}
-        <div className="flex items-center gap-6">
-
-          {/* HOME */}
-          <Link
-            to="/"
-            className={
-              location.pathname === "/"
-                ? "font-semibold text-black"
-                : "text-stone-500"
-            }
-          >
+          <Link to="/"
+            className={`shrink-0 ${location.pathname === "/" ? "font-semibold text-black" : "text-stone-500"}`}>
             Home
           </Link>
 
-
-
-          {/* SAVED */}
-          <Link
-            to="/saved"
-            className={
-              location.pathname === "/saved"
-                ? "font-semibold text-black"
-                : "text-stone-500"
-            }
-          >
+          <Link to="/saved"
+            className={`shrink-0 whitespace-nowrap ${location.pathname === "/saved" ? "font-semibold text-black" : "text-stone-500"}`}>
             Saved ({savedJobs.length})
           </Link>
 
-
-
-          {/* ADMIN LOGOUT */}
           {isAdmin && (
-
-            <button
-              onClick={
-                handleAdminLogout
-              }
-              className="bg-red-500 text-white px-4 py-2 rounded-xl text-sm"
-            >
-              Logout Admin
+            <button onClick={handleAdminLogout}
+              className="shrink-0 hidden md:block bg-red-500 text-white px-3 py-1.5 rounded-xl text-xs">
+              Admin
             </button>
-
           )}
 
-
-
-          {/* USER */}
           {user && (
-
-  <div className="flex items-center gap-3">
-
-    {/* USER NAME */}
-    <div className="bg-stone-100 px-4 py-2 rounded-xl text-sm">
-
-      {user?.name}
-
-    </div>
-
-
-
-    {/* LOGOUT */}
-    <button
-      onClick={() => {
-
-        localStorage.removeItem(
-          "token"
-        );
-
-        localStorage.removeItem(
-          "user"
-        );
-
-        localStorage.removeItem(
-          "savedJobs"
-        );
-
-        window.location.href = "/";
-      }}
-      className="bg-black text-white px-4 py-2 rounded-xl text-sm"
-    >
-      Logout
-    </button>
-
-  </div>
-
-)}
+            <div className="flex items-center gap-2">
+              <div className="shrink-0 hidden md:block bg-stone-100 px-3 py-1.5 rounded-xl text-sm">
+                {user?.name}
+              </div>
+              <button onClick={handleLogout}
+                className="shrink-0 bg-black text-white px-3 py-1.5 rounded-xl text-xs whitespace-nowrap">
+                Logout
+              </button>
+            </div>
+          )}
 
         </div>
-
       </div>
-
     </nav>
-
   );
 }
