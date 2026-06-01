@@ -5,28 +5,6 @@ import {
 
 import { useEffect } from "react";
 
-const job = jobs.find(
-  (j) => j._id === id
-);
-
-useEffect(() => {
-  if (job) {
-    document.title = `${job.title} | JanSetu`;
-
-    const metaDescription =
-      document.querySelector(
-        'meta[name="description"]'
-      );
-
-    if (metaDescription) {
-      metaDescription.setAttribute(
-        "content",
-        `${job.title} recruitment notification. ${job.vacancies} vacancies. Qualification: ${job.qualification}. Last date: ${job.lastDate}.`
-      );
-    }
-  }
-}, [job]);
-
 export default function JobPage({ jobs }) {
 
   const { id } = useParams();
@@ -168,22 +146,18 @@ export default function JobPage({ jobs }) {
         <div className="border rounded-xl p-6 mb-6 bg-white">
 
           <h2 className="font-semibold mb-3 text-lg">
-  About This Recruitment
-</h2>
+            Job Description
+          </h2>
 
-<p className="text-sm text-stone-600 leading-relaxed">
-  {job.title} recruitment has been announced by
-  the {job.department} department.
+          <p className="text-sm text-stone-600 leading-relaxed">
 
-  Candidates possessing {job.qualification}
-  qualification can apply for a total of
-  {job.vacancies} vacancies.
+            This recruitment is conducted by the official{" "}
+            {job.department} department.
 
-  Interested applicants should complete the
-  application process before {job.lastDate}
-  through the official notification and
-  application portal.
-</p>
+            Candidates meeting the eligibility criteria
+            can apply before the deadline.
+
+          </p>
 
         </div>
 
