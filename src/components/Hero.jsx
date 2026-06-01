@@ -70,13 +70,12 @@ export default function Hero({
       <h1 className="text-2xl md:text-4xl font-semibold mb-6 max-w-3xl mx-auto">
 
         Find Official Government Jobs Across India
-        <p className="text-stone-600 mt-3">
-  SSC • Banking • Railway • Defence • PSU • State Government
-</p>
-
+        
       </h1>
 
-
+      <p className="text-lg md:text-xl text-stone-500 mt-4 mb-6">
+                 SSC • Banking • Railway • Defence • PSU • State Government
+      </p>
 
       {/* SEARCH */}
       <div className="relative max-w-xl mx-auto">
@@ -107,7 +106,9 @@ export default function Hero({
           className="w-full px-5 py-4 border rounded-xl bg-white text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-amber-200"
         />
 
-
+        <p className="text-sm text-stone-500 mt-3">
+    Updated daily • Official links only • No registration required
+  </p>
 
         {/* SUGGESTIONS */}
         {showDropdown &&
