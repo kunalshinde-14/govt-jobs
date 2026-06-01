@@ -11,17 +11,29 @@ export default function JobPage({ jobs }) {
 
   const navigate = useNavigate();
 
-  // 🔥 FIX SCROLL TO TOP
+  // SCROLL TO TOP
   useEffect(() => {
 
     window.scrollTo(0, 0);
 
   }, []);
 
-  // 🔥 FIND JOB USING _id
+  // FIND JOB
   const job = jobs.find(
     (j) => j._id === id
   );
+
+  // SEO TITLE
+  useEffect(() => {
+
+    if (job) {
+
+      document.title =
+        `${job.title} | JanSetu`;
+
+    }
+
+  }, [job]);
 
   if (!job) {
 
@@ -38,7 +50,7 @@ export default function JobPage({ jobs }) {
       {/* MAIN */}
       <div className="px-4 md:px-6 py-10 pb-28 max-w-4xl mx-auto">
 
-        {/* 🔙 BACK */}
+        {/* BACK */}
         <button
           onClick={() => navigate(-1)}
           className="text-base font-medium text-stone-700 hover:text-amber-600 mb-5 flex items-center gap-2 transition"
@@ -146,22 +158,29 @@ export default function JobPage({ jobs }) {
         <div className="border rounded-xl p-6 mb-6 bg-white">
 
           <h2 className="font-semibold mb-3 text-lg">
-            Job Description
+            About This Recruitment
           </h2>
 
           <p className="text-sm text-stone-600 leading-relaxed">
 
-            This recruitment is conducted by the official{" "}
+            {job.title} recruitment has been announced by the{" "}
             {job.department} department.
 
-            Candidates meeting the eligibility criteria
-            can apply before the deadline.
+            Candidates possessing {job.qualification} qualification
+            can apply for a total of {job.vacancies} vacancies.
+
+            Interested applicants should complete the application
+            process before {job.lastDate} through the official
+            notification and application portal.
+
+            The job location is {job.state} and the salary offered
+            is {job.salary}.
 
           </p>
 
         </div>
 
-        {/* 💻 DESKTOP APPLY */}
+        {/* DESKTOP APPLY */}
         <div className="hidden md:block">
 
           <a
@@ -178,11 +197,16 @@ export default function JobPage({ jobs }) {
 
           </a>
 
+          <p className="text-xs text-center text-stone-500 mt-3">
+            JanSetu only redirects to official recruitment websites.
+            We do not collect applications or charge any fees.
+          </p>
+
         </div>
 
       </div>
 
-      {/* 📱 MOBILE APPLY */}
+      {/* MOBILE APPLY */}
       <div className="fixed bottom-0 left-0 w-full bg-white border-t shadow-[0_-4px_12px_rgba(0,0,0,0.06)] p-3 md:hidden">
 
         <a
@@ -198,6 +222,10 @@ export default function JobPage({ jobs }) {
           </button>
 
         </a>
+
+        <p className="text-[11px] text-center text-stone-500 mt-2">
+          Official application link
+        </p>
 
       </div>
     </>
