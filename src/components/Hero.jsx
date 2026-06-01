@@ -106,10 +106,7 @@ export default function Hero({
           className="w-full px-5 py-4 border rounded-xl bg-white text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-amber-200"
         />
 
-        <p className="text-sm text-stone-500 mt-3">
-    Updated daily • Official links only • No registration required
-  </p>
-
+        
         {/* SUGGESTIONS */}
         {showDropdown &&
           query && (
