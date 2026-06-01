@@ -23,9 +23,17 @@ export default function Navbar({ savedJobs }) {
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
 
         {/* LOGO */}
-        <Link to="/" className="text-xl font-bold text-amber-600 shrink-0">
-          GovtJobs
-        </Link>
+<Link to="/" className="shrink-0">
+
+  <div className="text-xl md:text-2xl font-bold text-amber-600">
+    JanSetu
+  </div>
+
+  <div className="text-[10px] md:text-xs text-stone-500 leading-none">
+    Government Jobs Across India
+  </div>
+
+</Link>
 
         {/* NAV — no wrap, all on one line */}
         <div className="flex items-center gap-3 text-sm">

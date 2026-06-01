@@ -69,7 +69,10 @@ export default function Hero({
       {/* HEADING */}
       <h1 className="text-2xl md:text-4xl font-semibold mb-6 max-w-3xl mx-auto">
 
-        Your government job shouldn't be this hard to find
+        Find Official Government Jobs Across India
+        <p className="text-stone-600 mt-3">
+  SSC • Banking • Railway • Defence • PSU • State Government
+</p>
 
       </h1>
 
