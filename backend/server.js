@@ -39,7 +39,17 @@ const startDeleteExpiredJobs =
 
 
 // MIDDLEWARE
-app.use(cors());
+// MIDDLEWARE
+app.use(
+  cors({
+    origin: [
+      "https://jansetu.in",
+      "https://www.jansetu.in",
+      "http://localhost:5173",
+    ],
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 
