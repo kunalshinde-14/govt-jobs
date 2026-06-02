@@ -24,15 +24,11 @@ export default function Navbar({ savedJobs }) {
 
         {/* LOGO */}
 <Link to="/" className="shrink-0">
-
-  <div className="text-xl md:text-2xl font-bold text-amber-600">
-    JanSetu
-  </div>
-
-  <div className="text-[10px] md:text-xs text-stone-500 leading-none">
-    Government Jobs Across India
-  </div>
-
+  <img
+    src="/jansetu-logo.png.png"
+    alt="JanSetu"
+    className="h-14 w-auto"
+  />
 </Link>
 
         {/* NAV — no wrap, all on one line */}
