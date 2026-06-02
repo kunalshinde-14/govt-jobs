@@ -27,7 +27,7 @@ export default function Navbar({ savedJobs }) {
   <img
     src="/logo.png"
     alt="JanSetu"
-    className="h-14 w-auto"
+    className="h-20 md:h-24 w-auto"
   />
 </Link>
 
