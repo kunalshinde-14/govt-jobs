@@ -25,7 +25,7 @@ export default function Navbar({ savedJobs }) {
         {/* LOGO */}
 <Link to="/" className="shrink-0">
   <img
-    src="/jansetu-logo.png.png"
+    src="/jansetu-logo.png"
     alt="JanSetu"
     className="h-14 w-auto"
   />
