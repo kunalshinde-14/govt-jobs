@@ -21,11 +21,20 @@ export default function StatePage({
       )
       .join(" ");
 
-  const stateJobs = jobs.filter(
-    (job) =>
-      job.state?.toLowerCase() ===
-      formattedState.toLowerCase()
+  const stateJobs = jobs.filter((job) => {
+
+  const jobState =
+    job.state?.toLowerCase();
+
+  const currentState =
+    formattedState.toLowerCase();
+
+  return (
+    jobState === currentState ||
+    jobState === "all india"
   );
+
+});
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">
