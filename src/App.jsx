@@ -19,6 +19,8 @@ import CategoryPage from "./pages/CategoryPage";
 import JobPage from "./pages/JobPage";
 import AdminPage from "./pages/AdminPage";
 import AdminLogin from "./pages/AdminLogin";
+import StatePage from "./pages/StatePage";
+
 
 function App() {
 
@@ -253,9 +255,22 @@ function App() {
             <JobPage jobs={jobs} />
           }
         />
-
+        {/* STATE PAGE */}
+<Route
+  path="/state/:state"
+  element={
+    <StatePage
+      jobs={jobs}
+      isLoggedIn={isLoggedIn}
+      setShowLogin={setShowLogin}
+      savedJobs={savedJobs}
+      setSavedJobs={setSavedJobs}
+    />
+  }
+/>
       </Routes>
-
+      
+      
 
 
       {/* LOGIN MODAL */}

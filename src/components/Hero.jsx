@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function Hero({
   jobs,
@@ -187,81 +188,77 @@ export default function Hero({
 
 
       {/* FILTERS */}
-      <div className="flex justify-center gap-3 mt-6 flex-wrap">
+<div className="flex justify-center gap-3 mt-6 flex-wrap">
 
-        {[
-          "10th",
-          "12th",
-          "Graduate",
-        ].map((item) => (
+  {[
+    "10th",
+    "12th",
+    "Graduate",
+  ].map((item) => (
 
-          <button
-            key={item}
-            onClick={() =>
-              setFilters((prev) => {
+    <button
+      key={item}
+      onClick={() =>
+        setFilters((prev) => {
 
-                const exists =
-                  prev.qualification.includes(item);
+          const exists =
+            prev.qualification.includes(item);
 
-                return {
-                  ...prev,
+          return {
+            ...prev,
 
-                  qualification: exists
-                    ? prev.qualification.filter(
-                        (q) =>
-                          q !== item
-                      )
-                    : [
-                        ...prev.qualification,
-                        item,
-                      ],
-                };
+            qualification: exists
+              ? prev.qualification.filter(
+                  (q) => q !== item
+                )
+              : [
+                  ...prev.qualification,
+                  item,
+                ],
+          };
 
-              })
-            }
-            className={`px-4 py-2 border rounded-full transition ${
-              filters.qualification.includes(item)
-                ? "bg-amber-600 text-white border-amber-600"
-                : "bg-white hover:bg-stone-50"
-            }`}
-          >
+        })
+      }
+      className={`px-4 py-2 border rounded-full transition ${
+        filters.qualification.includes(item)
+          ? "bg-amber-600 text-white border-amber-600"
+          : "bg-white hover:bg-stone-50"
+      }`}
+    >
+      {item}
+    </button>
 
-            {item}
+  ))}
 
-          </button>
+  <Link
+    to="/state/maharashtra"
+    className="px-4 py-2 border rounded-full bg-white hover:bg-stone-50"
+  >
+    Maharashtra
+  </Link>
 
-        ))}
+  <Link
+    to="/state/bihar"
+    className="px-4 py-2 border rounded-full bg-white hover:bg-stone-50"
+  >
+    Bihar
+  </Link>
 
+  <Link
+    to="/state/rajasthan"
+    className="px-4 py-2 border rounded-full bg-white hover:bg-stone-50"
+  >
+    Rajasthan
+  </Link>
 
+  <Link
+    to="/state/uttar-pradesh"
+    className="px-4 py-2 border rounded-full bg-white hover:bg-stone-50"
+  >
+    Uttar Pradesh
+  </Link>
 
-        {/* STATE FILTER */}
-        <button
-          onClick={() =>
-            setFilters((prev) => ({
-
-              ...prev,
-
-              state:
-                prev.state ===
-                "Maharashtra"
-                  ? ""
-                  : "Maharashtra",
-
-            }))
-          }
-          className={`px-4 py-2 border rounded-full transition ${
-            filters.state ===
-            "Maharashtra"
-              ? "bg-amber-600 text-white border-amber-600"
-              : "bg-white hover:bg-stone-50"
-          }`}
-        >
-
-          Maharashtra
-
-        </button>
-
-      </div>
+</div>
 
 
 
