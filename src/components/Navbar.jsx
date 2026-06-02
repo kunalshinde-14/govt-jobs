@@ -20,7 +20,7 @@ export default function Navbar({ savedJobs }) {
 
   return (
     <nav className="border-b bg-white sticky top-0 z-50">
-  <div className="max-w-7xl mx-auto px-6 py-2 flex items-center justify-between">
+  <div className="max-w-7xl mx-auto px-6 py-1 flex items-center justify-between">
 
         {/* LOGO */}
 <Link to="/" className="shrink-0">
@@ -32,7 +32,7 @@ export default function Navbar({ savedJobs }) {
 </Link>
 
         {/* NAV — no wrap, all on one line */}
-        <div className="flex items-center gap-5 text-sm">
+        <div className="flex items-center gap-5 text-base font-medium">
 
           <Link to="/"
             className={`shrink-0 px-1 font-medium ${location.pathname === "/" ? "font-semibold text-black" : "text-stone-500"}`}>
