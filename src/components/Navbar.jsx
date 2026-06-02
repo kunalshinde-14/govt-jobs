@@ -21,13 +21,13 @@ export default function Navbar({ savedJobs }) {
   return (
     <nav className="border-b bg-white sticky top-0 z-50">
   <div className="max-w-6xl mx-auto px-4 py-2 flex items-center justify-between">
-    
+
         {/* LOGO */}
 <Link to="/" className="shrink-0">
   <img
     src="/logo.png"
     alt="JanSetu"
-    className="h-20 md:h-24 w-auto"
+    className="h-24 md:h-24 w-auto"
   />
 </Link>
 
