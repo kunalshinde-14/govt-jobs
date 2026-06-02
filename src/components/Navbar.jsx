@@ -20,27 +20,27 @@ export default function Navbar({ savedJobs }) {
 
   return (
     <nav className="border-b bg-white sticky top-0 z-50">
-  <div className="max-w-7xl mx-auto px-4 py-1 flex items-center justify-between">
+  <div className="max-w-7xl mx-auto px-6 py-2 flex items-center justify-between">
 
         {/* LOGO */}
 <Link to="/" className="shrink-0">
   <img
     src="/logo.png"
     alt="JanSetu"
-    className="h-24 md:h-24 w-auto"
+    className="h-14 md:h-16 w-auto"
   />
 </Link>
 
         {/* NAV — no wrap, all on one line */}
-        <div className="flex items-center gap-3 text-sm">
+        <div className="flex items-center gap-5 text-sm">
 
           <Link to="/"
-            className={`shrink-0 ${location.pathname === "/" ? "font-semibold text-black" : "text-stone-500"}`}>
+            className={`shrink-0 px-1 font-medium ${location.pathname === "/" ? "font-semibold text-black" : "text-stone-500"}`}>
             Home
           </Link>
 
           <Link to="/saved"
-            className={`shrink-0 whitespace-nowrap ${location.pathname === "/saved" ? "font-semibold text-black" : "text-stone-500"}`}>
+            className={`shrink-0 whitespace-nowrap px-1 font-medium ${location.pathname === "/saved" ? "font-semibold text-black" : "text-stone-500"}`}>
             Saved ({savedJobs.length})
           </Link>
 
@@ -53,11 +53,11 @@ export default function Navbar({ savedJobs }) {
 
           {user && (
             <div className="flex items-center gap-2">
-              <div className="shrink-0 hidden md:block bg-stone-100 px-3 py-1.5 rounded-xl text-sm">
+              <div className="shrink-0 hidden md:block bg-stone-100 px-4 py-2 rounded-xl text-base">
                 {user?.name}
               </div>
               <button onClick={handleLogout}
-                className="shrink-0 bg-black text-white px-3 py-1.5 rounded-xl text-xs whitespace-nowrap">
+                className="shrink-0 bg-black text-white px-5 py-2 rounded-xl text-sm whitespace-nowrap font-medium">
                 Logout
               </button>
             </div>
