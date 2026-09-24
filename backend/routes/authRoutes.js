@@ -5,10 +5,11 @@ const jwt = require("jsonwebtoken");
 const router = express.Router();
 
 const User = require("../models/User");
+const { authLimiter } = require("../middleware/rateLimiter");
 
 
 // 🔥 SIGNUP
-router.post("/signup", async (req, res) => {
+router.post("/signup", authLimiter, async (req, res) => {
 
   try {
 
@@ -40,14 +41,15 @@ router.post("/signup", async (req, res) => {
     });
 
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Signup error:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 
 });
 
 
 // 🔥 LOGIN
-router.post("/login", async (req, res) => {
+router.post("/login", authLimiter, async (req, res) => {
 
   try {
 
@@ -77,7 +79,8 @@ router.post("/login", async (req, res) => {
     });
 
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Login error:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 
 });

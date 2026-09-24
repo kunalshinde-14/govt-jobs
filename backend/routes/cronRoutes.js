@@ -4,7 +4,37 @@ const router = express.Router();
 
 const Job = require("../models/Job");
 
-router.get("/expired", async (req, res) => {
+// 🔒 CRON SECRET MIDDLEWARE
+// This endpoint can only be called by a trusted caller
+// that supplies the correct x-cron-secret header.
+// The value must match the CRON_SECRET environment variable.
+const verifyCronSecret = (req, res, next) => {
+
+  const cronSecret = process.env.CRON_SECRET;
+
+  // If CRON_SECRET is not configured, refuse all requests
+  if (!cronSecret) {
+    return res.status(503).json({
+      success: false,
+      error: "Cron secret not configured on server",
+    });
+  }
+
+  const provided = req.headers["x-cron-secret"];
+
+  if (!provided || provided !== cronSecret) {
+    return res.status(401).json({
+      success: false,
+      error: "Unauthorized",
+    });
+  }
+
+  next();
+
+};
+
+
+router.delete("/expired", verifyCronSecret, async (req, res) => {
 
   try {
 
@@ -30,9 +60,11 @@ router.get("/expired", async (req, res) => {
 
   } catch (error) {
 
+    console.error("Cron route error:", error);
+
     res.status(500).json({
       success: false,
-      error: error.message,
+      error: "Internal server error",
     });
 
   }

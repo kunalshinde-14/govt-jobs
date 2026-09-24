@@ -1,9 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const Job = require("../models/Job");
-const adminMiddleware = require("../middleware/adminMiddleware");
-const verifyAdmin =
-  require("../middleware/verifyAdmin");
+const verifyAdmin = require("../middleware/verifyAdmin");
+
 
 // ✅ GET ALL JOBS — public
 router.get("/", async (req, res) => {
@@ -15,9 +14,8 @@ router.get("/", async (req, res) => {
 
   } catch (error) {
 
-    res.status(500).json({
-      message: error.message,
-    });
+    console.error("Get jobs error:", error);
+    res.status(500).json({ message: "Internal server error" });
 
   }
 
@@ -25,87 +23,64 @@ router.get("/", async (req, res) => {
 
 
 // 🔒 ADD JOB — admin only
-router.post(
-  "/",
-  verifyAdmin,
-  adminMiddleware,
-  async (req, res) => {
+router.post("/", verifyAdmin, async (req, res) => {
 
-    try {
+  try {
 
-      const newJob = new Job(req.body);
-      const savedJob = await newJob.save();
-      res.status(201).json(savedJob);
+    const newJob = new Job(req.body);
+    const savedJob = await newJob.save();
+    res.status(201).json(savedJob);
 
-    } catch (error) {
+  } catch (error) {
 
-      res.status(500).json({
-        message: error.message,
-      });
-
-    }
+    console.error("Add job error:", error);
+    res.status(500).json({ message: "Internal server error" });
 
   }
-);
+
+});
 
 
 // 🔒 UPDATE JOB — admin only
-router.put(
-  "/:id",
-  verifyAdmin,
-  adminMiddleware,
-  async (req, res) => {
+router.put("/:id", verifyAdmin, async (req, res) => {
 
-    try {
+  try {
 
-      const updatedJob =
-        await Job.findByIdAndUpdate(
-          req.params.id,
-          req.body,
-          { new: true }
-        );
+    const updatedJob = await Job.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
 
-      res.json(updatedJob);
+    res.json(updatedJob);
 
-    } catch (error) {
+  } catch (error) {
 
-      res.status(500).json({
-        message: error.message,
-      });
-
-    }
+    console.error("Update job error:", error);
+    res.status(500).json({ message: "Internal server error" });
 
   }
-);
+
+});
 
 
 // 🔒 DELETE JOB — admin only
-router.delete(
-  "/:id",
-  verifyAdmin,
-  adminMiddleware,
-  async (req, res) => {
+router.delete("/:id", verifyAdmin, async (req, res) => {
 
-    try {
+  try {
 
-      await Job.findByIdAndDelete(
-        req.params.id
-      );
+    await Job.findByIdAndDelete(req.params.id);
 
-      res.json({
-        message: "Job deleted successfully",
-      });
+    res.json({ message: "Job deleted successfully" });
 
-    } catch (error) {
+  } catch (error) {
 
-      res.status(500).json({
-        message: error.message,
-      });
-
-    }
+    console.error("Delete job error:", error);
+    res.status(500).json({ message: "Internal server error" });
 
   }
-);
+
+});
 
 
 module.exports = router;

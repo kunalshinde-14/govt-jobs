@@ -4,8 +4,7 @@ const router = express.Router();
 
 const User = require("../models/User");
 
-const authMiddleware =
-  require("../middleware/authMiddleware");
+const authMiddleware = require("../middleware/authMiddleware");
 
 
 // 🔥 SAVE JOB
@@ -16,29 +15,22 @@ router.post(
 
     try {
 
-      const user =
-        await User.findById(req.userId);
+      const user = await User.findById(req.userId);
 
       const jobId = req.params.jobId;
 
       // AVOID DUPLICATES
-      if (
-        !user.savedJobs.includes(jobId)
-      ) {
+      if (!user.savedJobs.includes(jobId)) {
         user.savedJobs.push(jobId);
-
         await user.save();
       }
 
-      res.json({
-        message: "Job saved",
-      });
+      res.json({ message: "Job saved" });
 
     } catch (error) {
 
-      res.status(500).json({
-        message: error.message,
-      });
+      console.error("Save job error:", error);
+      res.status(500).json({ message: "Internal server error" });
 
     }
 
@@ -54,28 +46,22 @@ router.delete(
 
     try {
 
-      const user =
-        await User.findById(req.userId);
+      const user = await User.findById(req.userId);
 
       const jobId = req.params.jobId;
 
-      user.savedJobs =
-        user.savedJobs.filter(
-          (id) =>
-            id.toString() !== jobId
-        );
+      user.savedJobs = user.savedJobs.filter(
+        (id) => id.toString() !== jobId
+      );
 
       await user.save();
 
-      res.json({
-        message: "Job removed",
-      });
+      res.json({ message: "Job removed" });
 
     } catch (error) {
 
-      res.status(500).json({
-        message: error.message,
-      });
+      console.error("Unsave job error:", error);
+      res.status(500).json({ message: "Internal server error" });
 
     }
 
@@ -91,17 +77,14 @@ router.get(
 
     try {
 
-      const user =
-        await User.findById(req.userId)
-          .populate("savedJobs");
+      const user = await User.findById(req.userId).populate("savedJobs");
 
       res.json(user.savedJobs);
 
     } catch (error) {
 
-      res.status(500).json({
-        message: error.message,
-      });
+      console.error("Get saved jobs error:", error);
+      res.status(500).json({ message: "Internal server error" });
 
     }
 

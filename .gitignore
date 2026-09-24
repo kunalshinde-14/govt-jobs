@@ -12,6 +12,16 @@ dist
 dist-ssr
 *.local
 
+# Environment variable files — never commit secrets
+.env
+.env.local
+.env.*.local
+backend/.env
+backend/.env.local
+# Explicitly allow example/template files
+!.env.example
+!backend/.env.example
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
