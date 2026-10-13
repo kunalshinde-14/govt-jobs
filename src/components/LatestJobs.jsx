@@ -1,4 +1,5 @@
 import JobCard from "./JobCard";
+import { isJobActive } from "../utils/jobHelpers";
 
 export default function LatestJobs({
   jobs,
@@ -11,16 +12,19 @@ export default function LatestJobs({
   setSavedJobs,
 }) {
 
-  // 🔥 GET CLOSING SOON IDS to exclude them
+  // 🔥 GET CLOSING SOON IDS to exclude them (active jobs only)
   const closingSoonIds = [...jobs]
+    .filter((job) => isJobActive(job))
     .sort((a, b) => new Date(a.lastDate) - new Date(b.lastDate))
     .slice(0, 3)
     .map((job) => job._id);
 
-  // 🔍 FILTER — exclude closing soon + apply search/filters
+  // 🔍 FILTER — exclude closing soon + exclude expired + apply search/filters
   const filteredJobs = jobs.filter((job) => {
 
   if (!job) return false;
+
+  if (!isJobActive(job)) return false;
 
   if (closingSoonIds.includes(job?._id))
     return false;

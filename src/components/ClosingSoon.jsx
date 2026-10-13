@@ -1,4 +1,5 @@
 import JobCard from "./JobCard";
+import { isJobActive } from "../utils/jobHelpers";
 
 export default function ClosingSoon({
   jobs,
@@ -13,8 +14,11 @@ export default function ClosingSoon({
   const savedIds =
     new Set(savedJobs);
 
-  // 🔥 REMOVE DUPLICATES FROM LATEST
-  const closingJobs = [...jobs]
+  // 🔥 FILTER ONLY ACTIVE JOBS (Never display expired jobs)
+  const activeJobs = jobs.filter((job) => isJobActive(job));
+
+  // 🔥 REMOVE DUPLICATES AND GET TOP 6 CLOSING SOON
+  const closingJobs = [...activeJobs]
     .sort(
       (a, b) =>
         new Date(a.lastDate) -
@@ -28,6 +32,10 @@ export default function ClosingSoon({
         )
     )
     .slice(0, 6);
+
+  if (!loading && closingJobs.length === 0) {
+    return null;
+  }
 
   return (
     <div className="px-4 md:px-6 py-12 max-w-6xl mx-auto">
