@@ -144,11 +144,12 @@ function App() {
 
 
   return (
-
-    <div className="min-h-screen bg-[#fffbf5]">
-
+    <div className="min-h-screen flex flex-col bg-[#FAF8F3] text-[#202521] font-sans">
       {/* NAVBAR */}
-      <Navbar savedJobs={savedJobs} />
+      <Navbar
+        savedJobs={savedJobs}
+        onOpenLogin={() => setShowLogin(true)}
+      />
 
 
 

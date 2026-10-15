@@ -18,6 +18,13 @@ const jobSchema = new mongoose.Schema(
       required: true,
     },
 
+    eligibilityNotes: {
+      type: String,
+      default: "",
+      trim: true,
+      maxlength: 500,
+    },
+
     state: {
       type: String,
       required: true,
