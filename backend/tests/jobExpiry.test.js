@@ -9,6 +9,8 @@ const {
   isJobExpired,
   isJobActive,
   isClosingSoon,
+  formatCompactDate,
+  getJobCountdown,
 } = require("../utils/jobHelpers");
 
 const verifyAdmin = require("../middleware/verifyAdmin");
@@ -358,6 +360,150 @@ describe("Job Expiry, Date & Access Rules (Asia/Kolkata)", () => {
       assert.equal(filtered.some((j) => j.lastDate === "2026-04-31"), false);
       assert.equal(filtered.some((j) => j.lastDate === "2026-13-01"), false);
       assert.equal(filtered.some((j) => j.status === "archived"), false);
+    });
+  });
+
+  describe("formatCompactDate()", () => {
+    it("formats standard YYYY-MM-DD dates into compact Indian portal format (e.g. 27 Oct 2026)", () => {
+      assert.equal(formatCompactDate("2026-10-27"), "27 Oct 2026");
+      assert.equal(formatCompactDate("2026-01-15"), "15 Jan 2026");
+      assert.equal(formatCompactDate("2026-05-02"), "2 May 2026");
+      assert.equal(formatCompactDate("2026-12-31"), "31 Dec 2026");
+    });
+
+    it("gracefully returns input or empty string for invalid, non-standard, or empty inputs", () => {
+      assert.equal(formatCompactDate(""), "");
+      assert.equal(formatCompactDate("2026-02-31"), "2026-02-31");
+      assert.equal(formatCompactDate("invalid"), "invalid");
+      assert.equal(formatCompactDate(null), "");
+      assert.equal(formatCompactDate(undefined), "");
+    });
+  });
+
+  describe("getJobCountdown() (Real-Time Asia/Kolkata Countdown & Expiry)", () => {
+    it("returns null for unknown or invalid date strings so the UI displays date without countdown", () => {
+      assert.equal(getJobCountdown("unknown"), null);
+      assert.equal(getJobCountdown("2026-02-31"), null);
+      assert.equal(getJobCountdown(null), null);
+      assert.equal(getJobCountdown({ lastDate: "not-a-date" }), null);
+    });
+
+    it("calculates exact countdown in Asia/Kolkata timezone (23:59:59 IST end-of-day convention)", () => {
+      // Reference lastDate: 2026-10-27
+      // Simulated now in IST: 2026-10-22 09:27:00 IST (+05:30)
+      const simulatedNowIST = new Date("2026-10-22T09:27:00+05:30").getTime();
+      const countdown = getJobCountdown("2026-10-27", "active", simulatedNowIST);
+
+      assert.ok(countdown);
+      assert.equal(countdown.status, "active");
+      assert.equal(countdown.days, 5);
+      assert.equal(countdown.hours, 14);
+      assert.equal(countdown.minutes, 32);
+      assert.equal(countdown.text, "5d 14h 32m");
+      assert.equal(countdown.isUrgent, false); // > 3 days -> not urgent (neutral)
+    });
+
+    it("marks countdown as urgent and formats correctly when deadline is <= 3 days", () => {
+      // 2 days and 14 hours left
+      const simulatedNowUrgent = new Date("2026-10-25T09:27:00+05:30").getTime();
+      const countdown = getJobCountdown("2026-10-27", "active", simulatedNowUrgent);
+
+      assert.ok(countdown);
+      assert.equal(countdown.status, "active");
+      assert.equal(countdown.days, 2);
+      assert.equal(countdown.hours, 14);
+      assert.equal(countdown.minutes, 32);
+      assert.equal(countdown.text, "2d 14h 32m");
+      assert.equal(countdown.isUrgent, true); // <= 3 days -> urgent (coral)
+    });
+
+    it("switches to hour-minute-second precision when under 24 hours", () => {
+      // 14 hours, 32 minutes, 15 seconds remaining
+      const simulatedNowUnderDay = new Date("2026-10-27T09:27:44+05:30").getTime();
+      const countdown = getJobCountdown("2026-10-27", "active", simulatedNowUnderDay);
+
+      assert.ok(countdown);
+      assert.equal(countdown.status, "active");
+      assert.equal(countdown.days, 0);
+      assert.equal(countdown.hours, 14);
+      assert.equal(countdown.minutes, 32);
+      assert.equal(countdown.seconds, 15);
+      assert.equal(countdown.text, "14h 32m 15s");
+      assert.equal(countdown.isUrgent, true);
+    });
+
+    it("switches to minute-second precision when under 1 hour", () => {
+      // 32 minutes, 15 seconds remaining
+      const simulatedNowUnderHour = new Date("2026-10-27T23:27:44+05:30").getTime();
+      const countdown = getJobCountdown("2026-10-27", "active", simulatedNowUnderHour);
+
+      assert.ok(countdown);
+      assert.equal(countdown.status, "active");
+      assert.equal(countdown.days, 0);
+      assert.equal(countdown.hours, 0);
+      assert.equal(countdown.minutes, 32);
+      assert.equal(countdown.seconds, 15);
+      assert.equal(countdown.text, "32m 15s");
+      assert.equal(countdown.isUrgent, true);
+    });
+
+    it("switches to seconds precision when under 1 minute", () => {
+      // 45 seconds remaining
+      const simulatedNowUnderMinute = new Date("2026-10-27T23:59:14+05:30").getTime();
+      const countdown = getJobCountdown("2026-10-27", "active", simulatedNowUnderMinute);
+
+      assert.ok(countdown);
+      assert.equal(countdown.status, "active");
+      assert.equal(countdown.days, 0);
+      assert.equal(countdown.hours, 0);
+      assert.equal(countdown.minutes, 0);
+      assert.equal(countdown.seconds, 45);
+      assert.equal(countdown.text, "45s");
+      assert.equal(countdown.isUrgent, true);
+    });
+
+    it("returns status: 'closed' when deadline has passed (diffMs <= 0)", () => {
+      // 1 second after 23:59:59 IST
+      const simulatedExpired = new Date("2026-10-28T00:00:00+05:30").getTime();
+      const countdown = getJobCountdown("2026-10-27", "active", simulatedExpired);
+
+      assert.ok(countdown);
+      assert.equal(countdown.status, "closed");
+      assert.equal(countdown.text, "Closed");
+      assert.equal(countdown.isUrgent, false);
+      assert.ok(countdown.diffMs <= 0);
+    });
+
+    it("returns status: 'closed' immediately if job status is 'expired' or 'archived'", () => {
+      const futureExpired = {
+        lastDate: "2026-12-31",
+        status: "expired",
+      };
+      const countdownExpired = getJobCountdown(futureExpired);
+      assert.equal(countdownExpired.status, "closed");
+      assert.equal(countdownExpired.text, "Closed");
+
+      const futureArchived = {
+        lastDate: "2026-12-31",
+        status: "archived",
+      };
+      const countdownArchived = getJobCountdown(futureArchived);
+      assert.equal(countdownArchived.status, "closed");
+      assert.equal(countdownArchived.text, "Closed");
+    });
+
+    it("ensures timezone independence across UTC, America/New_York, and Asia/Kolkata", () => {
+      // 2026-10-27T23:59:59+05:30 is 2026-10-27T18:29:59.000Z in UTC
+      const utcTargetMs = Date.parse("2026-10-27T18:29:59.000Z");
+      // Simulated now at 2026-10-25T18:29:59.000Z (exactly 48 hours / 2 days prior)
+      const simulatedNowUtc = Date.parse("2026-10-25T18:29:59.000Z");
+
+      const countdown = getJobCountdown("2026-10-27", "active", simulatedNowUtc);
+      assert.equal(countdown.days, 2);
+      assert.equal(countdown.hours, 0);
+      assert.equal(countdown.minutes, 0);
+      assert.equal(countdown.diffMs, utcTargetMs - simulatedNowUtc);
+      assert.equal(countdown.text, "2d 0h 0m");
     });
   });
 });

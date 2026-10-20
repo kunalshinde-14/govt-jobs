@@ -7,12 +7,14 @@ import { Routes, Route } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
+import SinceLastVisit from "./components/SinceLastVisit";
 import ClosingSoon from "./components/ClosingSoon";
 import LatestJobs from "./components/LatestJobs";
 import Categories from "./components/Categories";
 import Footer from "./components/Footer";
 
 import LoginModal from "./components/LoginModal";
+import PreferencesModal from "./components/PreferencesModal";
 
 import SavedJobs from "./pages/SavedJobs";
 import CategoryPage from "./pages/CategoryPage";
@@ -51,6 +53,10 @@ function App() {
 
   // 🔐 LOGIN MODAL
   const [showLogin, setShowLogin] =
+    useState(false);
+
+  // 🎯 PREFERENCES MODAL
+  const [showPreferences, setShowPreferences] =
     useState(false);
 
   // ❤️ SAVED JOB IDS
@@ -144,11 +150,12 @@ function App() {
 
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF8F3] text-[#202521] font-sans">
+    <div className="min-h-screen flex flex-col bg-[#F7F8FC] text-[#17243A] font-sans antialiased selection:bg-[#EAF2FF] selection:text-[#17243A]">
       {/* NAVBAR */}
       <Navbar
         savedJobs={savedJobs}
         onOpenLogin={() => setShowLogin(true)}
+        onOpenPreferences={() => setShowPreferences(true)}
       />
 
 
@@ -160,7 +167,7 @@ function App() {
           path="/"
           element={
 
-            <div className="space-y-8">
+            <div className="space-y-6 md:space-y-10">
 
               <Hero
                 jobs={jobs}
@@ -168,6 +175,11 @@ function App() {
                 setSearch={setSearch}
                 filters={filters}
                 setFilters={setFilters}
+              />
+
+              <SinceLastVisit
+                isLoggedIn={isLoggedIn}
+                onOpenPreferences={() => setShowPreferences(true)}
               />
 
               <ClosingSoon
@@ -290,6 +302,14 @@ function App() {
           }}
         />
 
+      )}
+
+      {/* PREFERENCES ONBOARDING & EDIT MODAL */}
+      {showPreferences && (
+        <PreferencesModal
+          isOpen={showPreferences}
+          onClose={() => setShowPreferences(false)}
+        />
       )}
 
 

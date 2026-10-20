@@ -37,24 +37,24 @@ export default function Categories({ jobs = [], loading }) {
   const max = Math.max(...counts, 1);
 
   return (
-    <section className="px-4 sm:px-6 py-8 md:py-12 max-w-7xl mx-auto w-full">
+    <section className="px-4 sm:px-6 py-6 md:py-10 max-w-7xl mx-auto w-full">
       {/* SECTION HEADER */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 mb-6 border-b border-[#E8E5DE] pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 mb-6 border-b border-[#E4EAF3] pb-4">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="p-1 rounded bg-[#FFF8ED] text-[#F28C00]">
-              <Layers size={16} />
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="p-1 rounded-lg bg-[#EAF2FF] text-[#17243A] border border-[#D7DFEB]">
+              <Layers size={15} className="text-[#F28C28]" />
             </span>
-            <span className="text-xs font-bold uppercase tracking-wider text-[#B45309]">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#23334D]">
               Sectors & Departments
             </span>
           </div>
-          <h2 className="text-xl sm:text-2xl font-bold text-[#202521] tracking-tight">
+          <h2 className="text-xl sm:text-2xl font-extrabold text-[#17243A] tracking-tight">
             Browse by Sector
           </h2>
         </div>
-        <p className="text-xs sm:text-sm text-[#737873]">
-          Quickly discover opportunities matching your target domain.
+        <p className="text-xs sm:text-sm text-[#66758A]">
+          Explore vacancies curated by major governmental departments and examination boards.
         </p>
       </div>
 
@@ -64,12 +64,12 @@ export default function Categories({ jobs = [], loading }) {
           {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
             <div
               key={i}
-              className="bg-white border border-[#E8E5DE] rounded-xl p-4 shadow-subtle"
+              className="bg-white border border-[#E4EAF3] rounded-2xl p-4 shadow-subtle"
             >
-              <div className="h-8 w-8 shimmer rounded-lg mb-3"></div>
-              <div className="h-5 w-24 shimmer rounded mb-2"></div>
-              <div className="h-3 w-16 shimmer rounded mb-3"></div>
-              <div className="h-1 shimmer rounded-full"></div>
+              <div className="h-9 w-9 shimmer rounded-xl mb-3"></div>
+              <div className="h-5 w-24 shimmer rounded-lg mb-2"></div>
+              <div className="h-3 w-16 shimmer rounded-lg mb-3"></div>
+              <div className="h-1.5 shimmer rounded-full"></div>
             </div>
           ))}
         </div>
@@ -84,7 +84,7 @@ export default function Categories({ jobs = [], loading }) {
               <div
                 key={cat.slug}
                 onClick={() => navigate(`/category/${encodeURIComponent(cat.slug)}`)}
-                className="bg-white border border-[#E8E5DE] hover:border-[#F28C00]/50 rounded-xl p-4 shadow-card hover:shadow-hover cursor-pointer transition-all duration-200 group flex flex-col justify-between"
+                className="bg-white border border-[#E4EAF3] hover:border-[#B8C4D4] rounded-2xl p-4 sm:p-5 shadow-card hover:shadow-hover hover:-translate-y-0.5 cursor-pointer transition-all duration-200 group flex flex-col justify-between"
                 tabIndex={0}
                 role="button"
                 onKeyDown={(e) => {
@@ -96,31 +96,34 @@ export default function Categories({ jobs = [], loading }) {
               >
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <div className="w-9 h-9 rounded-lg bg-[#FAF8F3] border border-[#E8E5DE] flex items-center justify-center text-[#737873] group-hover:text-[#F28C00] group-hover:bg-[#FFF8ED] transition-colors">
-                      <Icon size={18} />
+                    <div className="w-10 h-10 rounded-xl bg-[#EAF2FF] border border-[#D7DFEB] flex items-center justify-center text-[#17243A] group-hover:text-[#F28C28] group-hover:bg-[#FFF7ED] group-hover:border-[#FDD8B3] transition-colors">
+                      <Icon size={19} />
                     </div>
-                    <ArrowRight
-                      size={14}
-                      className="text-[#9BA09B] opacity-0 group-hover:opacity-100 group-hover:text-[#F28C00] -translate-x-1 group-hover:translate-x-0 transition-all"
-                    />
+                    <span className="text-xs font-semibold text-[#66758A] bg-[#F7F8FC] border border-[#E4EAF3] px-2 py-0.5 rounded-lg group-hover:text-[#17243A]">
+                      {count} {count === 1 ? "opening" : "openings"}
+                    </span>
                   </div>
 
-                  <h3 className="font-bold text-sm sm:text-base text-[#202521] group-hover:text-[#F28C00] transition-colors">
+                  <h3 className="font-bold text-[#17243A] text-sm sm:text-base group-hover:text-[#F28C28] transition-colors mb-1">
                     {cat.name}
                   </h3>
-
-                  <p className="text-xs text-[#737873] mt-0.5">
-                    {count} {count === 1 ? "vacancy" : "vacancies"}
+                  <p className="text-[11px] text-[#66758A]">
+                    Verified Public Openings
                   </p>
                 </div>
 
-                {/* CAPACITY / PROPORTION BAR */}
-                <div className="mt-3 pt-2">
-                  <div className="h-1 bg-[#FAF8F3] border border-[#E8E5DE] rounded-full overflow-hidden">
+                <div className="mt-4 pt-3 border-t border-[#E4EAF3]">
+                  {/* Subtle Relative Opportunity Level */}
+                  <div className="w-full bg-[#EAF2FF] h-1.5 rounded-full overflow-hidden mb-2">
                     <div
-                      className="h-full bg-[#F28C00] rounded-full transition-all duration-300"
-                      style={{ width: `${count > 0 ? percentage : 4}%` }}
+                      className="bg-[#F28C28] h-full rounded-full transition-all duration-500"
+                      style={{ width: `${percentage}%` }}
                     />
+                  </div>
+
+                  <div className="flex items-center justify-between text-[11px] font-semibold text-[#66758A] group-hover:text-[#17243A]">
+                    <span>Explore Sector</span>
+                    <ArrowRight size={13} className="group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>
               </div>

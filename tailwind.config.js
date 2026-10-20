@@ -4,30 +4,56 @@ export default {
   theme: {
     extend: {
       colors: {
-        ivory: {
-          DEFAULT: "#FAF8F3",
-          50: "#FCFAF7",
-          100: "#FAF8F3",
-          200: "#F5F2EA",
-          300: "#E8E5DE",
+        // Modern Indian SaaS Dashboard Palette
+        canvas: {
+          DEFAULT: "#F7F8FC",
+          subtle: "#F0F4FA",
+        },
+        surface: {
+          DEFAULT: "#FFFFFF",
+          soft: "#EAF2FF",
+          tint: "#F2F6FD",
         },
         saffron: {
-          DEFAULT: "#F28C00",
-          hover: "#D97706",
-          dark: "#B45309",
-          light: "#FFF8ED",
-          border: "#FDE0B2",
+          DEFAULT: "#F28C28",
+          hover: "#E07D1B",
+          dark: "#C4650E",
+          light: "#FFF7ED",
+          border: "#FDD8B3",
         },
-        charcoal: {
-          DEFAULT: "#202521",
-          900: "#202521",
-          700: "#3D443F",
-          500: "#737873",
-          400: "#9BA09B",
-          300: "#C4C8C3",
-          100: "#F0F2EF",
+        navy: {
+          DEFAULT: "#17243A",
+          900: "#111C2E",
+          800: "#17243A",
+          700: "#23334D",
+          600: "#344663",
+          500: "#4D607E",
         },
-        borderLight: "#E8E5DE",
+        slate: {
+          DEFAULT: "#66758A",
+          600: "#66758A",
+          500: "#7A899E",
+          400: "#96A4B7",
+          300: "#B8C4D4",
+          200: "#D7DFEB",
+          100: "#EAEFF6",
+        },
+        teal: {
+          DEFAULT: "#159B82",
+          hover: "#11826D",
+          light: "#E8F7F4",
+          border: "#B7E8DF",
+        },
+        coral: {
+          DEFAULT: "#E84D62",
+          hover: "#D63B51",
+          light: "#FDF0F2",
+          border: "#FAC7CF",
+        },
+        borderSoft: {
+          DEFAULT: "#E4EAF3",
+          light: "#EBF0F7",
+        },
       },
       fontFamily: {
         sans: [
@@ -41,9 +67,10 @@ export default {
         ],
       },
       boxShadow: {
-        subtle: "0 1px 2px 0 rgba(32, 37, 33, 0.03)",
-        card: "0 1px 4px 0 rgba(32, 37, 33, 0.05), 0 1px 2px -1px rgba(32, 37, 33, 0.04)",
-        hover: "0 8px 16px -2px rgba(32, 37, 33, 0.07), 0 2px 4px -2px rgba(32, 37, 33, 0.04)",
+        subtle: "0 1px 3px 0 rgba(23, 36, 58, 0.04), 0 1px 2px -1px rgba(23, 36, 58, 0.03)",
+        card: "0 2px 8px -2px rgba(23, 36, 58, 0.06), 0 1px 4px -1px rgba(23, 36, 58, 0.04)",
+        hover: "0 12px 24px -4px rgba(23, 36, 58, 0.08), 0 4px 8px -2px rgba(23, 36, 58, 0.04)",
+        floating: "0 16px 36px -6px rgba(23, 36, 58, 0.12), 0 6px 14px -3px rgba(23, 36, 58, 0.06)",
       },
     },
   },
