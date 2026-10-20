@@ -51,21 +51,28 @@ app.use(helmet());
 // localhost:5173 is only included in development
 // to avoid exposing it in production.
 // ─────────────────────────────────────────────
-const allowedOrigins = [
+const defaultOrigins = [
   "https://jansetu.in",
   "https://www.jansetu.in",
 ];
 
-if (process.env.NODE_ENV !== "production") {
+const envOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(",").map((o) => o.trim()).filter(Boolean)
+  : [];
+
+const allowedOrigins = Array.from(new Set([...defaultOrigins, ...envOrigins]));
+
+if (process.env.NODE_ENV !== "production" && !allowedOrigins.includes("http://localhost:5173")) {
   allowedOrigins.push("http://localhost:5173");
 }
 
-app.use(
-  cors({
-    origin: allowedOrigins,
-    credentials: true,
-  })
-);
+const corsOptions = {
+  origin: allowedOrigins,
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+app.options("/{*path}", cors(corsOptions));
 
 
 app.use(express.json());
