@@ -110,7 +110,7 @@ router.get("/sitemap.xml", async (req, res) => {
       "upsc",
       "police",
       "teaching",
-      "state%20psc",
+      "state-psc",
     ];
     for (const cat of categories) {
       xml += `  <url>\n    <loc>${baseUrl}/category/${cat}</loc>\n    <changefreq>daily</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;

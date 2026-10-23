@@ -38,7 +38,7 @@ const CATEGORIES = [
   "upsc",
   "police",
   "teaching",
-  "state%20psc",
+  "state-psc",
 ];
 
 const STATES = [

@@ -15,6 +15,7 @@ const SECTOR_KEYWORDS = {
   police: ["police", "constable", "sub-inspector", "si", "dsp"],
   teaching: ["teacher", "kvs", "nvs", "tet", "ctet", "professor", "lecturer", "education"],
   "state psc": ["psc", "bpsc", "mpsc", "uppsc", "rpsc", "wbpsc", "appsc", "tspsc", "kpsc", "high court", "district court"],
+  "state-psc": ["psc", "bpsc", "mpsc", "uppsc", "rpsc", "wbpsc", "appsc", "tspsc", "kpsc", "high court", "district court"],
 };
 
 /**

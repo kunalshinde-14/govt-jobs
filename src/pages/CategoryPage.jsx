@@ -15,17 +15,26 @@ export default function CategoryPage({
   const { category } = useParams();
   const navigate = useNavigate();
 
-  // Format clean display name
+  // Normalize slug to search term and canonical slug
+  const normalizedTerm = category?.replace(/-/g, " ")?.toLowerCase() || "";
+  const canonicalSlug = category?.toLowerCase()?.replace(/\s+/g, "-") || "";
+
+  // Format clean display name (e.g. state-psc -> "State PSC", banking -> "Banking", upsc -> "UPSC")
   const displayName = category
-    ?.split(" ")
+    ?.split(/[- ]+/)
     ?.filter(Boolean)
-    ?.map((word) => word?.charAt(0)?.toUpperCase() + word?.slice(1))
+    ?.map((word) => {
+      const upper = word.toUpperCase();
+      if (["PSC", "SSC", "UPSC", "IAS", "IPS"].includes(upper)) return upper;
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    })
     ?.join(" ");
 
   // Filter jobs by category and active status
   const filteredJobs = jobs.filter((job) => {
     if (!job || !isJobActive(job)) return false;
-    return job.department?.toLowerCase().includes(category?.toLowerCase());
+    const dept = job.department?.toLowerCase() || "";
+    return dept.includes(normalizedTerm) || (category && dept.includes(category.toLowerCase()));
   });
 
   return (
@@ -33,7 +42,7 @@ export default function CategoryPage({
       <SEO
         title={`${displayName || "Sector"} Jobs in India — Latest Recruitment Notifications | JanSetu`}
         description={`Explore active government vacancies in ${displayName || "this sector"}. Check verified notifications, eligibility criteria, and official application links across India.`}
-        canonicalUrl={`https://jansetu.in/category/${category}`}
+        canonicalUrl={`https://jansetu.in/category/${canonicalSlug}`}
       />
 
       {/* BREADCRUMB */}

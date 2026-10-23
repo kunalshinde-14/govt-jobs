@@ -19,7 +19,7 @@ const CATEGORY_CONFIG = [
   { name: "UPSC", slug: "upsc", icon: Award },
   { name: "Police", slug: "police", icon: Shield },
   { name: "Teaching", slug: "teaching", icon: GraduationCap },
-  { name: "State PSC", slug: "state psc", icon: Briefcase },
+  { name: "State PSC", slug: "state-psc", icon: Briefcase },
 ];
 
 export default function Categories({ jobs = [], loading }) {
@@ -27,9 +27,10 @@ export default function Categories({ jobs = [], loading }) {
 
   // Count jobs for each category (case-insensitive substring)
   const getCount = (catSlug) => {
+    const term = catSlug.replace(/-/g, " ").toLowerCase();
     return jobs.filter((job) => {
       const dept = (job?.department || "").toLowerCase();
-      return dept.includes(catSlug.toLowerCase());
+      return dept.includes(term);
     }).length;
   };
 
