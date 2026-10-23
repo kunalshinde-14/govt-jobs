@@ -106,14 +106,14 @@ export default function Hero({
         {/* EDITORIAL RECRUITMENT BADGE */}
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#EAF2FF] border border-[#D7DFEB] text-[#23334D] text-xs font-semibold tracking-wide uppercase mb-4 shadow-subtle">
           <span className="w-2 h-2 rounded-full bg-[#159B82] animate-pulse"></span>
-          <span>Verified Government Recruitments</span>
+          <span>Verified Government Recruitments • Updated Daily</span>
         </div>
 
         {/* HEADLINE */}
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#17243A] tracking-tight leading-[1.18] mb-4">
-          Your next opportunity{" "}
+          Latest Government Jobs{" "}
           <span className="relative inline-block text-[#F28C28]">
-            starts here.
+            across India.
             <svg
               className="absolute -bottom-1 left-0 w-full h-2 text-[#FDD8B3] -z-10"
               viewBox="0 0 100 20"
@@ -132,7 +132,7 @@ export default function Hero({
 
         {/* SUPPORTING TEXT */}
         <p className="text-sm sm:text-base md:text-lg text-[#66758A] max-w-2xl mx-auto mb-8 font-normal leading-relaxed">
-          Explore verified government jobs across India, all in one place. Official notifications, transparent qualifications, and direct application links.
+          Discover verified government job vacancies, official recruitment notifications, eligibility criteria, real-time deadlines, and direct application links.
         </p>
 
         {/* LARGE ROUNDED SEARCH PANEL */}

@@ -1,4 +1,11 @@
+# https://www.robotstxt.org/robotstxt.html
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /admin-login
+Disallow: /saved
+Disallow: /api/
 
+# Host & Sitemap specification
+Host: https://jansetu.in
 Sitemap: https://jansetu.in/sitemap.xml

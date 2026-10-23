@@ -78,6 +78,84 @@ router.get("/admin/:id", verifyAdmin, async (req, res) => {
 });
 
 
+// 🗺️ XML SITEMAP FOR SEARCH ENGINES — public
+// Dynamically generates an XML sitemap of all currently active vacancies
+router.get("/sitemap.xml", async (req, res) => {
+  try {
+    const today = getKolkataDateString();
+    const jobs = await Job.find({
+      status: { $nin: ["expired", "archived"] },
+      lastDate: { $regex: /^\d{4}-\d{2}-\d{2}$/, $gte: today },
+    })
+      .select("_id updatedAt lastDate createdAt")
+      .lean();
+
+    const validJobs = jobs.filter(
+      (job) => isValidDateString(job.lastDate) && isJobActive(job, today)
+    );
+
+    const baseUrl = process.env.FRONTEND_URL || "https://jansetu.in";
+
+    let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+
+    // Static core pages
+    xml += `  <url>\n    <loc>${baseUrl}/</loc>\n    <changefreq>daily</changefreq>\n    <priority>1.0</priority>\n  </url>\n`;
+
+    // Category pages
+    const categories = [
+      "banking",
+      "defence",
+      "railway",
+      "ssc",
+      "upsc",
+      "police",
+      "teaching",
+      "state%20psc",
+    ];
+    for (const cat of categories) {
+      xml += `  <url>\n    <loc>${baseUrl}/category/${cat}</loc>\n    <changefreq>daily</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
+    }
+
+    // State pages
+    const states = [
+      "all-india",
+      "delhi",
+      "maharashtra",
+      "uttar-pradesh",
+      "bihar",
+      "rajasthan",
+      "madhya-pradesh",
+      "karnataka",
+      "tamil-nadu",
+      "west-bengal",
+      "gujarat",
+      "haryana",
+      "punjab",
+    ];
+    for (const st of states) {
+      xml += `  <url>\n    <loc>${baseUrl}/state/${st}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>\n`;
+    }
+
+    // Dynamic active jobs
+    for (const job of validJobs) {
+      const lastmod = job.updatedAt
+        ? new Date(job.updatedAt).toISOString().split("T")[0]
+        : today;
+      xml += `  <url>\n    <loc>${baseUrl}/job/${job._id}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
+    }
+
+    xml += `</urlset>`;
+
+    res.header("Content-Type", "application/xml");
+    res.header("Cache-Control", "public, max-age=3600, s-maxage=3600");
+    res.send(xml);
+  } catch (error) {
+    console.error("Sitemap error:", error);
+    res.status(500).send("Error generating sitemap");
+  }
+});
+
+
 // ✅ GET SINGLE ACTIVE JOB BY ID — public
 // Returns 404 unless the job has a valid calendar date in YYYY-MM-DD format,
 // a deadline today or later in Asia/Kolkata, and a status other than expired or archived.

@@ -1,6 +1,7 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { ArrowLeft, MapPin, SearchX } from "lucide-react";
 import JobCard from "../components/JobCard";
+import SEO from "../components/SEO";
 import { isJobActive } from "../utils/jobHelpers";
 
 export default function StatePage({
@@ -27,6 +28,12 @@ export default function StatePage({
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 md:py-12 w-full">
+      <SEO
+        title={`Government Jobs in ${formattedState || "India"} 2026 — Latest Vacancies | JanSetu`}
+        description={`Find latest government jobs in ${formattedState || "India"}. Explore verified state and central recruitment drives, eligibility details, and application deadlines.`}
+        canonicalUrl={`https://jansetu.in/state/${state}`}
+      />
+
       {/* BREADCRUMB */}
       <div className="mb-6">
         <button

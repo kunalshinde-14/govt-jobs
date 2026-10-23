@@ -2,22 +2,105 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>JanSetu - Government Jobs Across India</title>
+
+    <!-- Primary Title & Meta Description -->
+    <title>JanSetu — Latest Government Jobs in India</title>
     <meta
       name="description"
-      content="Discover verified government opportunities across India. Check eligibility, track deadlines, and apply directly through official portals."
+      content="Discover government job vacancies across India. Explore recruitment notifications, eligibility criteria, application deadlines and official application links."
     />
+    <meta
+      name="keywords"
+      content="government jobs, sarkari naukri, latest govt jobs, government vacancies india, recruitment notification, ssc, upsc, banking jobs, railway jobs, defence recruitments"
+    />
+    <meta name="author" content="JanSetu" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://jansetu.in/" />
+
+    <!-- Favicon & Icons -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/logo.png" />
+    <meta name="theme-color" content="#F28C28" />
+
+    <!-- Open Graph / Facebook / LinkedIn / WhatsApp -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://jansetu.in/" />
+    <meta property="og:title" content="JanSetu — Latest Government Jobs in India" />
+    <meta
+      property="og:description"
+      content="Discover government job vacancies across India. Explore recruitment notifications, eligibility criteria, application deadlines and official application links."
+    />
+    <meta property="og:image" content="https://jansetu.in/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="JanSetu — Latest Government Jobs in India" />
+    <meta property="og:site_name" content="JanSetu" />
+    <meta property="og:locale" content="en_IN" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://jansetu.in/" />
+    <meta name="twitter:title" content="JanSetu — Latest Government Jobs in India" />
+    <meta
+      name="twitter:description"
+      content="Discover government job vacancies across India. Explore recruitment notifications, eligibility criteria, application deadlines and official application links."
+    />
+    <meta name="twitter:image" content="https://jansetu.in/og-image.png" />
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+
+    <!-- Google Identity Services -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <!-- Structured Data (JSON-LD Schema) for Homepage -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://jansetu.in/#website",
+            "url": "https://jansetu.in/",
+            "name": "JanSetu",
+            "description": "Discover government job vacancies across India. Explore recruitment notifications, eligibility criteria, application deadlines and official application links.",
+            "inLanguage": "en-IN",
+            "publisher": {
+              "@id": "https://jansetu.in/#organization"
+            },
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": {
+                "@type": "EntryPoint",
+                "urlTemplate": "https://jansetu.in/?search={search_term_string}"
+              },
+              "query-input": "required name=search_term_string"
+            }
+          },
+          {
+            "@type": "Organization",
+            "@id": "https://jansetu.in/#organization",
+            "name": "JanSetu",
+            "url": "https://jansetu.in/",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://jansetu.in/logo.png"
+            },
+            "description": "Official, fast, and verified Indian government job discovery platform."
+          }
+        ]
+      }
+    </script>
   </head>
-  <body class="bg-[#FAF8F3] text-[#202521] antialiased selection:bg-[#FDE0B2] selection:text-[#B45309]">
+  <body class="bg-[#F7F8FC] text-[#17243A] antialiased selection:bg-[#FDE0B2] selection:text-[#B45309]">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

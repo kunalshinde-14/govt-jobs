@@ -12,6 +12,7 @@ import ClosingSoon from "./components/ClosingSoon";
 import LatestJobs from "./components/LatestJobs";
 import Categories from "./components/Categories";
 import Footer from "./components/Footer";
+import SEO from "./components/SEO";
 
 import LoginModal from "./components/LoginModal";
 import PreferencesModal from "./components/PreferencesModal";
@@ -168,6 +169,11 @@ function App() {
           element={
 
             <div className="space-y-6 md:space-y-10">
+              <SEO
+                title="JanSetu — Latest Government Jobs in India"
+                description="Discover government job vacancies across India. Explore recruitment notifications, eligibility criteria, application deadlines and official application links."
+                canonicalUrl="https://jansetu.in/"
+              />
 
               <Hero
                 jobs={jobs}

@@ -1,6 +1,7 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { ArrowLeft, Layers, SearchX } from "lucide-react";
 import JobCard from "../components/JobCard";
+import SEO from "../components/SEO";
 import { isJobActive } from "../utils/jobHelpers";
 
 export default function CategoryPage({
@@ -28,6 +29,12 @@ export default function CategoryPage({
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 md:py-12 w-full">
+      <SEO
+        title={`${displayName || "Sector"} Jobs in India — Latest Recruitment Notifications | JanSetu`}
+        description={`Explore active government vacancies in ${displayName || "this sector"}. Check verified notifications, eligibility criteria, and official application links across India.`}
+        canonicalUrl={`https://jansetu.in/category/${category}`}
+      />
+
       {/* BREADCRUMB */}
       <div className="mb-6">
         <button

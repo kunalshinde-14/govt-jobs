@@ -5,10 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "node scripts/generateSitemap.js && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "node --test backend/tests/*.test.js"
+    "test": "node --test backend/tests/*.test.js",
+    "generate:sitemap": "node scripts/generateSitemap.js"
   },
   "dependencies": {
     "axios": "^1.16.0",

@@ -14,6 +14,7 @@ import {
   Clock,
 } from "lucide-react";
 import { formatCompactDate, getJobCountdown } from "../utils/jobHelpers";
+import SEO from "../components/SEO";
 
 export default function JobPage({ jobs = [] }) {
   const { id } = useParams();
@@ -78,8 +79,50 @@ export default function JobPage({ jobs = [] }) {
     }
   })();
 
+  // Google JobPosting Schema for Rich Search Results
+  const jobSchema = {
+    "@context": "https://schema.org",
+    "@type": "JobPosting",
+    title: job.title,
+    description: `Official recruitment notification by ${job.department} for ${job.title}. Minimum educational qualification: ${job.qualification}. Vacancies: ${job.vacancies > 0 ? job.vacancies : "Refer notification"}. Remuneration: ${job.salary || "As per govt norms"}. Last date to submit applications: ${formattedDate}.${job.eligibilityNotes ? ` Special Requirements: ${job.eligibilityNotes}` : ""}`,
+    datePosted: job.createdAt ? new Date(job.createdAt).toISOString().split("T")[0] : new Date().toISOString().split("T")[0],
+    validThrough: job.lastDate ? `${job.lastDate}T23:59:59+05:30` : undefined,
+    employmentType: "FULL_TIME",
+    hiringOrganization: {
+      "@type": "Organization",
+      name: job.department,
+      sameAs: "https://jansetu.in",
+    },
+    jobLocation: {
+      "@type": "Place",
+      address: {
+        "@type": "PostalAddress",
+        addressRegion: job.state || "India",
+        addressCountry: "IN",
+      },
+    },
+    baseSalary: job.salary
+      ? {
+          "@type": "MonetaryAmount",
+          currency: "INR",
+          value: {
+            "@type": "QuantitativeValue",
+            value: job.salary,
+            unitText: "MONTH",
+          },
+        }
+      : undefined,
+  };
+
   return (
     <div className="w-full pb-28 md:pb-16 bg-[#F7F8FC]">
+      <SEO
+        title={`${job.title} — Official Recruitment | JanSetu`}
+        description={`Apply for ${job.title} by ${job.department}. Qualification: ${job.qualification}. ${job.vacancies > 0 ? `${job.vacancies} vacancies.` : ""} Last date: ${formattedDate}. Check eligibility and direct official link.`}
+        canonicalUrl={`https://jansetu.in/job/${job._id}`}
+        schema={jobSchema}
+      />
+
       {/* TOP NAVIGATION BREADCRUMB */}
       <div className="border-b border-[#E4EAF3] bg-white">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3 text-xs text-[#66758A]">
