@@ -1,5 +1,6 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 import {
   ArrowLeft,
   Building2,
@@ -12,34 +13,128 @@ import {
   ShieldCheck,
   Info,
   Clock,
+  Loader2,
 } from "lucide-react";
+import BASE_URL from "../utils/api";
 import { formatCompactDate, getJobCountdown } from "../utils/jobHelpers";
 import SEO from "../components/SEO";
 
-export default function JobPage({ jobs = [] }) {
+export default function JobPage({ jobs = [], loading: parentLoading = false }) {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  // Scroll to top upon mounting
+  // Find job from passed array if available
+  const cachedJob = jobs.find((j) => j._id === id);
+
+  // Dedicated single-job fetch state for direct navigation & page refresh
+  const [fetchedJob, setFetchedJob] = useState(null);
+  const [isFetching, setIsFetching] = useState(false);
+  const [fetchError, setFetchError] = useState(false);
+
+  // Scroll to top upon mounting or ID change
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [id]);
 
-  // Find job from array
-  const job = jobs.find((j) => j._id === id);
+  // Fetch job directly if not present in the cached array
+  useEffect(() => {
+    let isMounted = true;
+
+    if (cachedJob) {
+      return;
+    }
+
+    const fetchSingleJob = async () => {
+      setIsFetching(true);
+      setFetchError(false);
+      try {
+        const res = await axios.get(`${BASE_URL}/api/jobs/${id}`);
+        if (isMounted) {
+          setFetchedJob(res.data);
+          setFetchError(false);
+        }
+      } catch (err) {
+        if (isMounted) {
+          console.error("Job fetch error:", err?.response?.status || err?.message);
+          setFetchError(true);
+        }
+      } finally {
+        if (isMounted) {
+          setIsFetching(false);
+        }
+      }
+    };
+
+    fetchSingleJob();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [id, cachedJob]);
+
+  const job = cachedJob || fetchedJob;
+  const isLoading = !job && !fetchError && (parentLoading || isFetching);
 
   // SEO document title
   useEffect(() => {
     if (job) {
       document.title = `${job.title} — Official Recruitment | JanSetu`;
+    } else if (fetchError) {
+      document.title = "Recruitment Listing Not Found | JanSetu";
     } else {
-      document.title = "Job Details | JanSetu";
+      document.title = "Loading Recruitment Details | JanSetu";
     }
-  }, [job]);
+  }, [job, fetchError]);
 
-  if (!job) {
+  // Loading skeleton state for direct access / initial hydration
+  if (isLoading) {
+    return (
+      <div className="w-full pb-28 md:pb-16 bg-[#F7F8FC]">
+        <SEO
+          title="Loading Job Details | JanSetu"
+          description="Accessing official Indian government recruitment notification..."
+          canonicalUrl={`https://jansetu.in/job/${id}`}
+        />
+        <div className="border-b border-[#E4EAF3] bg-white">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+            <div className="h-4 w-28 bg-[#E4EAF3] rounded animate-pulse" />
+            <div className="h-4 w-48 bg-[#E4EAF3] rounded animate-pulse hidden sm:block" />
+          </div>
+        </div>
+
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8 space-y-6">
+          <div className="bg-white border border-[#E4EAF3] rounded-3xl p-6 sm:p-8 shadow-card space-y-5">
+            <div className="flex gap-2">
+              <div className="h-6 w-24 bg-[#EAF2FF] rounded-xl animate-pulse" />
+              <div className="h-6 w-20 bg-[#F7F8FC] rounded-xl animate-pulse" />
+              <div className="h-6 w-24 bg-[#F7F8FC] rounded-xl animate-pulse" />
+            </div>
+            <div className="h-8 w-3/4 bg-[#E4EAF3] rounded-xl animate-pulse" />
+            <div className="h-4 w-full bg-[#F7F8FC] rounded animate-pulse" />
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 border-t border-[#E4EAF3]">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="h-20 rounded-2xl bg-[#F7F8FC] border border-[#E4EAF3] p-3 animate-pulse" />
+              ))}
+            </div>
+          </div>
+          <div className="flex items-center justify-center py-6 text-xs text-[#66758A] gap-2">
+            <Loader2 size={16} className="animate-spin text-[#F28C28]" />
+            <span>Loading verified notification details...</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Not found state (only shown after verification confirms job is missing or expired)
+  if (!job || fetchError) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-20 text-center">
+        <SEO
+          title="Recruitment Listing Not Found | JanSetu"
+          description="The requested government job listing could not be found or has expired."
+          canonicalUrl={`https://jansetu.in/job/${id}`}
+        />
         <div className="w-14 h-14 rounded-2xl bg-[#EAF2FF] border border-[#D7DFEB] flex items-center justify-center mx-auto mb-4 text-[#66758A]">
           <Info size={24} className="text-[#F28C28]" />
         </div>
@@ -47,7 +142,7 @@ export default function JobPage({ jobs = [] }) {
           Recruitment Listing Not Found
         </h2>
         <p className="text-sm text-[#66758A] mb-6">
-          The requested job may have expired or the link is incorrect.
+          The requested vacancy has expired or the identifier is invalid.
         </p>
         <button
           onClick={() => navigate("/")}

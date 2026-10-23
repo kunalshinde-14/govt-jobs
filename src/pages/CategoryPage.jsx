@@ -6,6 +6,7 @@ import { isJobActive } from "../utils/jobHelpers";
 
 export default function CategoryPage({
   jobs = [],
+  loading = false,
   isLoggedIn,
   setShowLogin,
   savedJobs = [],
@@ -70,8 +71,25 @@ export default function CategoryPage({
         </div>
       </div>
 
-      {/* RESULTS GRID OR EMPTY STATE */}
-      {filteredJobs.length === 0 ? (
+      {/* RESULTS GRID, LOADING SKELETON, OR EMPTY STATE */}
+      {loading && filteredJobs.length === 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div
+              key={i}
+              className="h-64 rounded-3xl bg-white border border-[#E4EAF3] p-6 shadow-card animate-pulse space-y-4"
+            >
+              <div className="h-4 w-24 bg-[#EAF2FF] rounded-lg" />
+              <div className="h-6 w-3/4 bg-[#E4EAF3] rounded-lg" />
+              <div className="h-4 w-1/2 bg-[#F7F8FC] rounded" />
+              <div className="pt-6 border-t border-[#E4EAF3] flex justify-between">
+                <div className="h-8 w-20 bg-[#F7F8FC] rounded-xl" />
+                <div className="h-8 w-24 bg-[#EAF2FF] rounded-xl" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : filteredJobs.length === 0 ? (
         <div className="bg-white border border-[#E4EAF3] rounded-3xl p-10 sm:p-16 text-center max-w-xl mx-auto shadow-card">
           <div className="w-14 h-14 rounded-2xl bg-[#EAF2FF] border border-[#D7DFEB] flex items-center justify-center mx-auto mb-4 text-[#66758A]">
             <SearchX size={24} className="text-[#F28C28]" />

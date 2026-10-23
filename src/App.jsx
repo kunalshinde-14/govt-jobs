@@ -242,6 +242,7 @@ function App() {
           element={
             <CategoryPage
               jobs={jobs}
+              loading={loading}
               isLoggedIn={isLoggedIn}
               setShowLogin={setShowLogin}
               savedJobs={savedJobs}
@@ -271,7 +272,7 @@ function App() {
         <Route
           path="/job/:id"
           element={
-            <JobPage jobs={jobs} />
+            <JobPage jobs={jobs} loading={loading} />
           }
         />
         {/* STATE PAGE */}
@@ -280,6 +281,7 @@ function App() {
   element={
     <StatePage
       jobs={jobs}
+      loading={loading}
       isLoggedIn={isLoggedIn}
       setShowLogin={setShowLogin}
       savedJobs={savedJobs}
