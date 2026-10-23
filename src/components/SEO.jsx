@@ -24,6 +24,7 @@ export default function SEO({
   ogType = "website",
   ogImage = DEFAULT_IMAGE,
   schema = null,
+  noindex = false,
 }) {
   useEffect(() => {
     // 1. Update Title
@@ -39,6 +40,18 @@ export default function SEO({
       }
       element.setAttribute("content", content);
     };
+
+    // Robots Directive
+    if (noindex) {
+      setMetaTag("meta[name='robots']", "name", "robots", "noindex, follow");
+    } else {
+      setMetaTag(
+        "meta[name='robots']",
+        "name",
+        "robots",
+        "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+      );
+    }
 
     // 2. Primary Meta Tags
     setMetaTag("meta[name='description']", "name", "description", description);
@@ -86,7 +99,7 @@ export default function SEO({
     } else if (schemaScript) {
       schemaScript.remove();
     }
-  }, [title, description, canonicalUrl, ogType, ogImage, schema]);
+  }, [title, description, canonicalUrl, ogType, ogImage, schema, noindex]);
 
   return null;
 }

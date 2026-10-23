@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   Layers,
   Building,
@@ -23,8 +23,6 @@ const CATEGORY_CONFIG = [
 ];
 
 export default function Categories({ jobs = [], loading }) {
-  const navigate = useNavigate();
-
   // Count jobs for each category (case-insensitive substring)
   const getCount = (catSlug) => {
     const term = catSlug.replace(/-/g, " ").toLowerCase();
@@ -82,18 +80,11 @@ export default function Categories({ jobs = [], loading }) {
             const percentage = Math.min(100, Math.max(10, (count / max) * 100));
 
             return (
-              <div
+              <Link
                 key={cat.slug}
-                onClick={() => navigate(`/category/${encodeURIComponent(cat.slug)}`)}
-                className="bg-white border border-[#E4EAF3] hover:border-[#B8C4D4] rounded-2xl p-4 sm:p-5 shadow-card hover:shadow-hover hover:-translate-y-0.5 cursor-pointer transition-all duration-200 group flex flex-col justify-between"
-                tabIndex={0}
-                role="button"
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    navigate(`/category/${encodeURIComponent(cat.slug)}`);
-                  }
-                }}
+                to={`/category/${cat.slug}`}
+                className="bg-white border border-[#E4EAF3] hover:border-[#B8C4D4] rounded-2xl p-4 sm:p-5 shadow-card hover:shadow-hover hover:-translate-y-0.5 cursor-pointer transition-all duration-200 group flex flex-col justify-between focus:outline-none focus:ring-2 focus:ring-[#F28C28]"
+                aria-label={`Explore ${cat.name} vacancies`}
               >
                 <div>
                   <div className="flex items-center justify-between mb-3">
@@ -127,7 +118,7 @@ export default function Categories({ jobs = [], loading }) {
                     <ArrowRight size={13} className="group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>
-              </div>
+              </Link>
             );
           })}
         </div>

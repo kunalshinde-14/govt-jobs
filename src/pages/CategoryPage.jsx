@@ -37,12 +37,33 @@ export default function CategoryPage({
     return dept.includes(normalizedTerm) || (category && dept.includes(category.toLowerCase()));
   });
 
+  // Schema.org BreadcrumbList for Category discovery
+  const categorySchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://jansetu.in/",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: `${displayName || "Sector"} Jobs`,
+        item: `https://jansetu.in/category/${canonicalSlug}`,
+      },
+    ],
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 md:py-12 w-full">
       <SEO
         title={`${displayName || "Sector"} Jobs in India — Latest Recruitment Notifications | JanSetu`}
         description={`Explore active government vacancies in ${displayName || "this sector"}. Check verified notifications, eligibility criteria, and official application links across India.`}
         canonicalUrl={`https://jansetu.in/category/${canonicalSlug}`}
+        schema={categorySchema}
       />
 
       {/* BREADCRUMB */}

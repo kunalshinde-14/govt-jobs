@@ -14,9 +14,15 @@ import {
   Info,
   Clock,
   Loader2,
+  ArrowRight,
 } from "lucide-react";
 import BASE_URL from "../utils/api";
 import { formatCompactDate, getJobCountdown } from "../utils/jobHelpers";
+import {
+  parseSalarySchema,
+  resolveHiringOrganization,
+  resolveCategory,
+} from "../utils/seoHelpers";
 import SEO from "../components/SEO";
 
 export default function JobPage({ jobs = [], loading: parentLoading = false }) {
@@ -75,17 +81,6 @@ export default function JobPage({ jobs = [], loading: parentLoading = false }) {
   const job = cachedJob || fetchedJob;
   const isLoading = !job && !fetchError && (parentLoading || isFetching);
 
-  // SEO document title
-  useEffect(() => {
-    if (job) {
-      document.title = `${job.title} — Official Recruitment | JanSetu`;
-    } else if (fetchError) {
-      document.title = "Recruitment Listing Not Found | JanSetu";
-    } else {
-      document.title = "Loading Recruitment Details | JanSetu";
-    }
-  }, [job, fetchError]);
-
   // Loading skeleton state for direct access / initial hydration
   if (isLoading) {
     return (
@@ -134,6 +129,7 @@ export default function JobPage({ jobs = [], loading: parentLoading = false }) {
           title="Recruitment Listing Not Found | JanSetu"
           description="The requested government job listing could not be found or has expired."
           canonicalUrl={`https://jansetu.in/job/${id}`}
+          noindex={true}
         />
         <div className="w-14 h-14 rounded-2xl bg-[#EAF2FF] border border-[#D7DFEB] flex items-center justify-center mx-auto mb-4 text-[#66758A]">
           <Info size={24} className="text-[#F28C28]" />
@@ -174,20 +170,63 @@ export default function JobPage({ jobs = [], loading: parentLoading = false }) {
     }
   })();
 
-  // Google JobPosting Schema for Rich Search Results
-  const jobSchema = {
-    "@context": "https://schema.org",
+  const domainUrl = (() => {
+    try {
+      const parsed = new URL(job.applyLink);
+      return `${parsed.protocol}//${parsed.hostname}`;
+    } catch {
+      return "https://jansetu.in";
+    }
+  })();
+
+  // Resolve truthful category for breadcrumb navigation (no fallback to banking)
+  const category = resolveCategory(job);
+
+  // Build BreadcrumbList items (2-tier or 3-tier)
+  const breadcrumbItems = [
+    {
+      "@type": "ListItem",
+      position: 1,
+      name: "Home",
+      item: "https://jansetu.in/",
+    },
+  ];
+
+  if (category) {
+    breadcrumbItems.push({
+      "@type": "ListItem",
+      position: 2,
+      name: category.name,
+      item: `https://jansetu.in/category/${category.slug}`,
+    });
+    breadcrumbItems.push({
+      "@type": "ListItem",
+      position: 3,
+      name: job.title,
+      item: `https://jansetu.in/job/${job._id}`,
+    });
+  } else {
+    breadcrumbItems.push({
+      "@type": "ListItem",
+      position: 2,
+      name: job.title,
+      item: `https://jansetu.in/job/${job._id}`,
+    });
+  }
+
+  // Resolve hiring organization accurately (never output generic labels as employer)
+  const hiringOrg = resolveHiringOrganization(job, domainUrl);
+
+  // Base Schema.org JobPosting object
+  const jobPosting = {
     "@type": "JobPosting",
     title: job.title,
-    description: `Official recruitment notification by ${job.department} for ${job.title}. Minimum educational qualification: ${job.qualification}. Vacancies: ${job.vacancies > 0 ? job.vacancies : "Refer notification"}. Remuneration: ${job.salary || "As per govt norms"}. Last date to submit applications: ${formattedDate}.${job.eligibilityNotes ? ` Special Requirements: ${job.eligibilityNotes}` : ""}`,
-    datePosted: job.createdAt ? new Date(job.createdAt).toISOString().split("T")[0] : new Date().toISOString().split("T")[0],
+    description: `Official recruitment notification by ${job.department} for ${job.title}. Minimum educational qualification: ${job.qualification}. Vacancies: ${job.vacancies > 0 ? job.vacancies : "Refer official notification"}. Remuneration: ${job.salary || "As per government norms"}. Last date to submit applications: ${formattedDate}.${job.eligibilityNotes ? ` Special Requirements: ${job.eligibilityNotes}` : ""}`,
+    datePosted: job.createdAt
+      ? new Date(job.createdAt).toISOString().split("T")[0]
+      : new Date().toISOString().split("T")[0],
     validThrough: job.lastDate ? `${job.lastDate}T23:59:59+05:30` : undefined,
     employmentType: "FULL_TIME",
-    hiringOrganization: {
-      "@type": "Organization",
-      name: job.department,
-      sameAs: "https://jansetu.in",
-    },
     jobLocation: {
       "@type": "Place",
       address: {
@@ -196,24 +235,49 @@ export default function JobPage({ jobs = [], loading: parentLoading = false }) {
         addressCountry: "IN",
       },
     },
-    baseSalary: job.salary
-      ? {
-          "@type": "MonetaryAmount",
-          currency: "INR",
-          value: {
-            "@type": "QuantitativeValue",
-            value: job.salary,
-            unitText: "MONTH",
-          },
-        }
-      : undefined,
   };
+
+  if (hiringOrg) {
+    jobPosting.hiringOrganization = hiringOrg;
+  }
+
+  const salarySchema = parseSalarySchema(job.salary);
+  if (salarySchema) {
+    jobPosting.baseSalary = salarySchema;
+  }
+
+  // Comprehensive Google JobPosting Schema with BreadcrumbList graph
+  const jobSchema = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: breadcrumbItems,
+      },
+      jobPosting,
+    ],
+  };
+
+  const pageTitle = `${job.title} Recruitment 2026 — ${job.department}${job.vacancies > 0 ? ` (${job.vacancies} Posts)` : ""} | JanSetu`;
+  const pageDescription = `Official recruitment notification for ${job.title} by ${job.department}. ${job.vacancies > 0 ? `${job.vacancies} vacancies. ` : ""}Eligibility: ${job.qualification}${job.eligibilityNotes ? ` (${job.eligibilityNotes.slice(0, 90)}...)` : ""}. Pay: ${job.salary}. Last date to apply: ${formattedDate}. Check verified details and official application link.`;
+
+  // Related vacancies from cache (excluding current job)
+  const relatedJobs = jobs
+    .filter(
+      (j) =>
+        j &&
+        j._id !== job._id &&
+        (j.department === job.department ||
+          j.qualification === job.qualification ||
+          j.state === job.state)
+    )
+    .slice(0, 3);
 
   return (
     <div className="w-full pb-28 md:pb-16 bg-[#F7F8FC]">
       <SEO
-        title={`${job.title} — Official Recruitment | JanSetu`}
-        description={`Apply for ${job.title} by ${job.department}. Qualification: ${job.qualification}. ${job.vacancies > 0 ? `${job.vacancies} vacancies.` : ""} Last date: ${formattedDate}. Check eligibility and direct official link.`}
+        title={pageTitle}
+        description={pageDescription}
         canonicalUrl={`https://jansetu.in/job/${job._id}`}
         schema={jobSchema}
       />
@@ -232,8 +296,14 @@ export default function JobPage({ jobs = [], loading: parentLoading = false }) {
           <div className="hidden sm:flex items-center gap-2 truncate">
             <Link to="/" className="hover:underline">Home</Link>
             <span>/</span>
-            <span className="truncate max-w-[140px]">{job.department}</span>
-            <span>/</span>
+            {category && (
+              <>
+                <Link to={`/category/${category.slug}`} className="hover:underline truncate max-w-[140px]">
+                  {category.name}
+                </Link>
+                <span>/</span>
+              </>
+            )}
             <span className="text-[#17243A] font-semibold truncate max-w-[200px]">
               {job.title}
             </span>
@@ -246,10 +316,20 @@ export default function JobPage({ jobs = [], loading: parentLoading = false }) {
         {/* HEADER HERO CARD */}
         <div className="bg-white border border-[#E4EAF3] rounded-3xl p-6 sm:p-8 shadow-card">
           <div className="flex flex-wrap items-center gap-2 mb-4">
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#23334D] bg-[#EAF2FF] border border-[#D7DFEB] px-3 py-1 rounded-xl">
-              <Building2 size={14} className="text-[#F28C28]" />
-              <span>{job.department}</span>
-            </span>
+            {category ? (
+              <Link
+                to={`/category/${category.slug}`}
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#23334D] bg-[#EAF2FF] hover:bg-[#D7DFEB] border border-[#D7DFEB] px-3 py-1 rounded-xl transition"
+              >
+                <Building2 size={14} className="text-[#F28C28]" />
+                <span>{job.department}</span>
+              </Link>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#23334D] bg-[#EAF2FF] border border-[#D7DFEB] px-3 py-1 rounded-xl">
+                <Building2 size={14} className="text-[#F28C28]" />
+                <span>{job.department}</span>
+              </span>
+            )}
 
             <span className="inline-flex items-center gap-1 text-xs font-medium text-[#66758A] bg-[#F7F8FC] border border-[#E4EAF3] px-3 py-1 rounded-xl">
               <MapPin size={13} />
@@ -292,7 +372,7 @@ export default function JobPage({ jobs = [], loading: parentLoading = false }) {
                 <span>Salary / Pay</span>
               </div>
               <div className="font-extrabold text-sm sm:text-base text-[#17243A] truncate">
-                {job.salary}
+                {job.salary || "As per Norms"}
               </div>
             </div>
 
@@ -378,10 +458,10 @@ export default function JobPage({ jobs = [], loading: parentLoading = false }) {
             </p>
             <p>
               Candidates possessing the minimum required educational qualification of <strong className="text-[#17243A]">{job.qualification}</strong>
-              {job.eligibilityNotes ? ` (${job.eligibilityNotes})` : ""} are eligible to register. A total of <strong className="text-[#17243A]">{job.vacancies}</strong> vacancies have been notified.
+              {job.eligibilityNotes ? ` (${job.eligibilityNotes})` : ""} are eligible to register. A total of <strong className="text-[#17243A]">{job.vacancies > 0 ? `${job.vacancies} vacancies` : "vacancies as per notification"}</strong> have been announced.
             </p>
             <p>
-              The remuneration for this post is stated as <strong className="text-[#17243A]">{job.salary}</strong>. Applications must be completed online before <strong className="text-[#17243A]">{formattedDate}</strong>.
+              The remuneration for this post is stated as <strong className="text-[#17243A]">{job.salary || "As per government pay scale"}</strong>. Applications must be completed online before <strong className="text-[#17243A]">{formattedDate}</strong>.
             </p>
           </div>
         </div>
@@ -425,6 +505,52 @@ export default function JobPage({ jobs = [], loading: parentLoading = false }) {
             )}
           </div>
         </div>
+
+        {/* RELATED GOVERNMENT VACANCIES */}
+        {relatedJobs.length > 0 && (
+          <div className="pt-6 border-t border-[#E4EAF3] space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg sm:text-xl font-extrabold text-[#17243A]">
+                  Related Opportunities
+                </h3>
+                <p className="text-xs text-[#66758A]">
+                  Active public-sector drives matching your sector or qualification
+                </p>
+              </div>
+              <Link
+                to="/"
+                className="text-xs font-semibold text-[#F28C28] hover:underline hidden sm:inline-flex items-center gap-1"
+              >
+                <span>View all vacancies</span>
+                <ArrowRight size={13} />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+              {relatedJobs.map((rj) => (
+                <Link
+                  key={rj._id}
+                  to={`/job/${rj._id}`}
+                  className="bg-white border border-[#E4EAF3] hover:border-[#B8C4D4] rounded-2xl p-4 shadow-card hover:shadow-hover hover:-translate-y-0.5 transition-all group flex flex-col justify-between"
+                >
+                  <div>
+                    <span className="text-[11px] font-semibold text-[#23334D] bg-[#EAF2FF] px-2 py-0.5 rounded-md inline-block mb-2">
+                      {rj.department}
+                    </span>
+                    <h4 className="text-sm font-bold text-[#17243A] group-hover:text-[#F28C28] line-clamp-2 transition-colors mb-2">
+                      {rj.title}
+                    </h4>
+                  </div>
+                  <div className="text-xs text-[#66758A] flex items-center justify-between pt-3 border-t border-[#E4EAF3] mt-2">
+                    <span>{rj.qualification}</span>
+                    <span className="font-semibold text-[#17243A]">{formatCompactDate(rj.lastDate)}</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* MOBILE STICKY APPLICATION BAR */}

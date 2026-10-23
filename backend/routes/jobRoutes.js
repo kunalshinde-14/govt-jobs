@@ -87,7 +87,7 @@ router.get("/sitemap.xml", async (req, res) => {
       status: { $nin: ["expired", "archived"] },
       lastDate: { $regex: /^\d{4}-\d{2}-\d{2}$/, $gte: today },
     })
-      .select("_id updatedAt lastDate createdAt")
+      .select("_id updatedAt lastDate createdAt department state")
       .lean();
 
     const validJobs = jobs.filter(
@@ -96,10 +96,33 @@ router.get("/sitemap.xml", async (req, res) => {
 
     const baseUrl = process.env.FRONTEND_URL || "https://jansetu.in";
 
+    // Helper to format clean YYYY-MM-DD
+    const toDateStr = (dateVal) => {
+      try {
+        if (!dateVal) return "2026-10-15";
+        const d = new Date(dateVal);
+        if (isNaN(d.getTime())) return "2026-10-15";
+        return d.toISOString().split("T")[0];
+      } catch {
+        return "2026-10-15";
+      }
+    };
+
+    const getLatestMod = (jobList, baseline = "2026-10-15") => {
+      let latest = baseline;
+      for (const j of jobList) {
+        const dt = toDateStr(j.updatedAt || j.createdAt);
+        if (dt > latest) latest = dt;
+      }
+      return latest;
+    };
+
+    const homeLastMod = getLatestMod(validJobs);
+
     let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
 
     // Static core pages
-    xml += `  <url>\n    <loc>${baseUrl}/</loc>\n    <changefreq>daily</changefreq>\n    <priority>1.0</priority>\n  </url>\n`;
+    xml += `  <url>\n    <loc>${baseUrl}/</loc>\n    <lastmod>${homeLastMod}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>1.0</priority>\n  </url>\n`;
 
     // Category pages
     const categories = [
@@ -113,7 +136,10 @@ router.get("/sitemap.xml", async (req, res) => {
       "state-psc",
     ];
     for (const cat of categories) {
-      xml += `  <url>\n    <loc>${baseUrl}/category/${cat}</loc>\n    <changefreq>daily</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
+      const term = cat.replace(/-/g, " ").toLowerCase();
+      const catJobs = validJobs.filter((j) => (j.department || "").toLowerCase().includes(term));
+      const catLastMod = getLatestMod(catJobs, homeLastMod);
+      xml += `  <url>\n    <loc>${baseUrl}/category/${cat}</loc>\n    <lastmod>${catLastMod}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
     }
 
     // State pages
@@ -133,14 +159,18 @@ router.get("/sitemap.xml", async (req, res) => {
       "punjab",
     ];
     for (const st of states) {
-      xml += `  <url>\n    <loc>${baseUrl}/state/${st}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>\n`;
+      const term = st.replace(/-/g, " ").toLowerCase();
+      const stJobs = validJobs.filter((j) => {
+        const s = (j.state || "").toLowerCase();
+        return s === term || s === "all india";
+      });
+      const stLastMod = getLatestMod(stJobs, homeLastMod);
+      xml += `  <url>\n    <loc>${baseUrl}/state/${st}</loc>\n    <lastmod>${stLastMod}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>\n`;
     }
 
     // Dynamic active jobs
     for (const job of validJobs) {
-      const lastmod = job.updatedAt
-        ? new Date(job.updatedAt).toISOString().split("T")[0]
-        : today;
+      const lastmod = toDateStr(job.updatedAt || job.createdAt);
       xml += `  <url>\n    <loc>${baseUrl}/job/${job._id}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
     }
 

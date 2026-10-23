@@ -59,16 +59,16 @@ const STATES = [
 
 // Fallback active production jobs (verified active through late Oct / Nov 2026)
 const KNOWN_ACTIVE_JOBS = [
-  { _id: "6ad0ce48e904a2394ffeee24", lastDate: "2026-10-27", updatedAt: "2026-10-15" },
-  { _id: "6ad0ca863032d979739400b0", lastDate: "2026-10-27", updatedAt: "2026-10-15" },
-  { _id: "6ad0ca863032d979739400b1", lastDate: "2026-10-28", updatedAt: "2026-10-15" },
-  { _id: "6ad0ce48e904a2394ffeee27", lastDate: "2026-10-29", updatedAt: "2026-10-15" },
-  { _id: "6ad0ce48e904a2394ffeee23", lastDate: "2026-10-29", updatedAt: "2026-10-15" },
-  { _id: "6ad0ca863032d979739400af", lastDate: "2026-11-04", updatedAt: "2026-10-15" },
-  { _id: "6ad0ca863032d979739400ab", lastDate: "2026-11-04", updatedAt: "2026-10-15" },
-  { _id: "6ad0ca863032d979739400ac", lastDate: "2026-11-04", updatedAt: "2026-10-15" },
-  { _id: "6ad0ce48e904a2394ffeee26", lastDate: "2026-11-05", updatedAt: "2026-10-15" },
-  { _id: "6ad0ca863032d979739400aa", lastDate: "2026-11-11", updatedAt: "2026-10-15" },
+  { _id: "6ad0ce48e904a2394ffeee24", department: "PSU", state: "All India", lastDate: "2026-10-27", updatedAt: "2026-10-15" },
+  { _id: "6ad0ca863032d979739400b0", department: "High Court", state: "Himachal Pradesh", lastDate: "2026-10-27", updatedAt: "2026-10-15" },
+  { _id: "6ad0ca863032d979739400b1", department: "Insurance", state: "All India", lastDate: "2026-10-28", updatedAt: "2026-10-15" },
+  { _id: "6ad0ce48e904a2394ffeee27", department: "Defence", state: "All India", lastDate: "2026-10-29", updatedAt: "2026-10-15" },
+  { _id: "6ad0ce48e904a2394ffeee23", department: "Banking", state: "All India", lastDate: "2026-10-29", updatedAt: "2026-10-15" },
+  { _id: "6ad0ca863032d979739400af", department: "High Court", state: "Punjab", lastDate: "2026-11-04", updatedAt: "2026-10-15" },
+  { _id: "6ad0ca863032d979739400ab", department: "DSSSB", state: "Delhi", lastDate: "2026-11-04", updatedAt: "2026-10-15" },
+  { _id: "6ad0ca863032d979739400ac", department: "DSSSB", state: "Delhi", lastDate: "2026-11-04", updatedAt: "2026-10-15" },
+  { _id: "6ad0ce48e904a2394ffeee26", department: "TNPSC", state: "Tamil Nadu", lastDate: "2026-11-05", updatedAt: "2026-10-15" },
+  { _id: "6ad0ca863032d979739400aa", department: "DSSSB", state: "Delhi", lastDate: "2026-11-11", updatedAt: "2026-10-15" },
 ];
 
 /**
@@ -122,7 +122,7 @@ async function fetchActiveJobs() {
             status: { $nin: ["expired", "archived"] },
             lastDate: { $gte: today },
           })
-          .project({ _id: 1, lastDate: 1, updatedAt: 1 })
+          .project({ _id: 1, lastDate: 1, updatedAt: 1, createdAt: 1, department: 1, state: 1 })
           .toArray();
         await mongoose.disconnect();
 
@@ -160,8 +160,31 @@ async function fetchActiveJobs() {
 }
 
 async function generateSitemap() {
-  const today = getKolkataDateString();
   const jobs = await fetchActiveJobs();
+
+  // Helper to extract clean YYYY-MM-DD from date values
+  const toDateStr = (dateVal) => {
+    try {
+      if (!dateVal) return "2026-10-15";
+      const d = new Date(dateVal);
+      if (isNaN(d.getTime())) return "2026-10-15";
+      return d.toISOString().split("T")[0];
+    } catch {
+      return "2026-10-15";
+    }
+  };
+
+  // Find latest meaningful modification date across a job subset
+  const getLatestMod = (jobList, baseline = "2026-10-15") => {
+    let latest = baseline;
+    for (const j of jobList) {
+      const dt = toDateStr(j.updatedAt || j.createdAt);
+      if (dt > latest) latest = dt;
+    }
+    return latest;
+  };
+
+  const homeLastMod = getLatestMod(jobs);
 
   let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
   xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n\n`;
@@ -170,7 +193,7 @@ async function generateSitemap() {
   xml += `  <!-- Homepage -->\n`;
   xml += `  <url>\n`;
   xml += `    <loc>${BASE_URL}/</loc>\n`;
-  xml += `    <lastmod>${today}</lastmod>\n`;
+  xml += `    <lastmod>${homeLastMod}</lastmod>\n`;
   xml += `    <changefreq>daily</changefreq>\n`;
   xml += `    <priority>1.0</priority>\n`;
   xml += `  </url>\n\n`;
@@ -178,9 +201,13 @@ async function generateSitemap() {
   // 2. Sector / Category Pages
   xml += `  <!-- Sector / Category Discovery Pages -->\n`;
   for (const cat of CATEGORIES) {
+    const term = cat.replace(/-/g, " ").toLowerCase();
+    const catJobs = jobs.filter((j) => (j.department || "").toLowerCase().includes(term));
+    const catLastMod = getLatestMod(catJobs, homeLastMod);
+
     xml += `  <url>\n`;
     xml += `    <loc>${BASE_URL}/category/${cat}</loc>\n`;
-    xml += `    <lastmod>${today}</lastmod>\n`;
+    xml += `    <lastmod>${catLastMod}</lastmod>\n`;
     xml += `    <changefreq>daily</changefreq>\n`;
     xml += `    <priority>0.8</priority>\n`;
     xml += `  </url>\n`;
@@ -190,9 +217,16 @@ async function generateSitemap() {
   // 3. State Pages
   xml += `  <!-- Regional / State Opportunity Pages -->\n`;
   for (const st of STATES) {
+    const term = st.replace(/-/g, " ").toLowerCase();
+    const stJobs = jobs.filter((j) => {
+      const s = (j.state || "").toLowerCase();
+      return s === term || s === "all india";
+    });
+    const stLastMod = getLatestMod(stJobs, homeLastMod);
+
     xml += `  <url>\n`;
     xml += `    <loc>${BASE_URL}/state/${st}</loc>\n`;
-    xml += `    <lastmod>${today}</lastmod>\n`;
+    xml += `    <lastmod>${stLastMod}</lastmod>\n`;
     xml += `    <changefreq>weekly</changefreq>\n`;
     xml += `    <priority>0.7</priority>\n`;
     xml += `  </url>\n`;
@@ -202,7 +236,7 @@ async function generateSitemap() {
   // 4. Active Job Details
   xml += `  <!-- Individual Active Job Listings -->\n`;
   for (const job of jobs) {
-    const lastmod = job.updatedAt ? new Date(job.updatedAt).toISOString().split("T")[0] : today;
+    const lastmod = toDateStr(job.updatedAt || job.createdAt);
     xml += `  <url>\n`;
     xml += `    <loc>${BASE_URL}/job/${job._id}</loc>\n`;
     xml += `    <lastmod>${lastmod}</lastmod>\n`;

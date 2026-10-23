@@ -27,12 +27,33 @@ export default function StatePage({
     return jobState === currentState || jobState === "all india";
   });
 
+  // Schema.org BreadcrumbList for Regional/State discovery
+  const stateSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://jansetu.in/",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: `${formattedState || "State"} Jobs`,
+        item: `https://jansetu.in/state/${state}`,
+      },
+    ],
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 md:py-12 w-full">
       <SEO
         title={`Government Jobs in ${formattedState || "India"} 2026 — Latest Vacancies | JanSetu`}
         description={`Find latest government jobs in ${formattedState || "India"}. Explore verified state and central recruitment drives, eligibility details, and application deadlines.`}
         canonicalUrl={`https://jansetu.in/state/${state}`}
+        schema={stateSchema}
       />
 
       {/* BREADCRUMB */}

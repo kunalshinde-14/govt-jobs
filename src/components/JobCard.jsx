@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import {
   Heart,
@@ -97,27 +97,10 @@ export default function JobCard({
     }
   };
 
-  const handleApplyClick = (e) => {
-    e.stopPropagation();
-    if (isClosed) return;
-    if (job?.applyLink) {
-      window.open(job.applyLink, "_blank", "noopener,noreferrer");
-    }
-  };
-
   return (
     <article
       onClick={() => navigate(`/job/${job._id}`)}
       className="bg-white border border-[#E4EAF3] hover:border-[#B8C4D4] rounded-2xl p-5 shadow-card hover:shadow-hover hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex flex-col justify-between group relative"
-      tabIndex={0}
-      role="button"
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          navigate(`/job/${job._id}`);
-        }
-      }}
-      aria-label={`View details for ${job.title}`}
     >
       <div>
         {/* TOP ROW: Department & Save Interaction */}
@@ -162,7 +145,13 @@ export default function JobCard({
 
         {/* JOB TITLE */}
         <h3 className="font-bold text-[#17243A] text-base sm:text-lg leading-snug group-hover:text-[#F28C28] transition-colors mb-3 line-clamp-2">
-          {job.title}
+          <Link
+            to={`/job/${job._id}`}
+            onClick={(e) => e.stopPropagation()}
+            className="hover:underline focus:outline-none"
+          >
+            {job.title}
+          </Link>
         </h3>
 
         {/* METADATA CHIPS */}
@@ -252,10 +241,15 @@ export default function JobCard({
 
         {/* Right: View Details + Prominent Saffron Apply */}
         <div className="flex items-center gap-2 shrink-0">
-          <span className="text-xs font-semibold text-[#66758A] group-hover:text-[#17243A] transition-colors inline-flex items-center gap-0.5">
+          <Link
+            to={`/job/${job._id}`}
+            onClick={(e) => e.stopPropagation()}
+            className="text-xs font-semibold text-[#66758A] group-hover:text-[#17243A] transition-colors inline-flex items-center gap-0.5 hover:underline"
+            aria-label={`View full details for ${job.title}`}
+          >
             <span>Details</span>
             <ArrowRight size={13} />
-          </span>
+          </Link>
 
           {isClosed ? (
             <button
@@ -268,15 +262,17 @@ export default function JobCard({
               <span>Closed</span>
             </button>
           ) : (
-            <button
-              type="button"
-              onClick={handleApplyClick}
-              className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-xl bg-[#F28C28] hover:bg-[#E07D1B] text-white text-xs font-semibold transition-colors shadow-subtle shrink-0"
+            <a
+              href={job.applyLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-xl bg-[#F28C28] hover:bg-[#E07D1B] text-white text-xs font-semibold transition-colors shadow-subtle shrink-0 focus:outline-none focus:ring-2 focus:ring-[#F28C28]"
               aria-label={`Apply directly for ${job.title}`}
             >
               <span>Apply</span>
               <ExternalLink size={12} />
-            </button>
+            </a>
           )}
         </div>
       </div>
